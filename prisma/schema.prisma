@@ -1,0 +1,312 @@
+// ───────────────────────────────────────────────────────────────
+// Remasia / ريماسيا — schema.prisma  (V1, intentionally small)
+// A little flower world for soft hearts.
+// عالم صغير من الورد للقلوب الناعمة.
+//
+// Scope rule: do NOT overbuild. No customer accounts, no coupons,
+// no inventory engine, no payment-provider tables, no analytics.
+// Bilingual content lives inline as *En / *Ar fields (no translations table).
+// ───────────────────────────────────────────────────────────────
+
+// Prisma 7: the Rust-free `prisma-client` generator with a REQUIRED output path.
+// Runtime client is instantiated with the PrismaPg driver adapter (lib/prisma.ts).
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+// Prisma 7: connection URLs live in prisma.config.ts (datasource.url), NOT here.
+// The runtime client connects via the PrismaPg adapter (lib/prisma.ts).
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────── ENUMS ───────────────────────────
+
+enum AdminRole {
+  OWNER // Remas herself — the ONLY role used in V1
+  STAFF // reserved by the mandated enum; never surfaced or seeded in V1
+}
+
+enum BouquetStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  SOLD_OUT
+}
+
+enum OrderStatus {
+  NEW
+  CONFIRMED
+  PREPARING
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  WHATSAPP // primary V1 flow
+  BANK_TRANSFER
+  CASH_ON_DELIVERY
+  ONLINE_PLACEHOLDER
+}
+
+enum SocialPlatform {
+  INSTAGRAM
+  TIKTOK
+  ORIGINAL // an original Remasia flower photo
+}
+
+enum SocialPostType {
+  INSTAGRAM_EMBED
+  TIKTOK_EMBED
+  ORIGINAL_PHOTO
+}
+
+enum PublishStatus {
+  DRAFT
+  PUBLISHED
+}
+
+// ─────────────────────────── MODELS ───────────────────────────
+
+// The single owner of Remas Studio / استديو ريماس. V1 seeds exactly one OWNER row.
+// `email` exists only to key the idempotent seed upsert; login is by password
+// against the single row (no email lookup, no multi-user — see §1.5).
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String?
+  role         AdminRole @default(OWNER)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+// Collections: مجموعة ريماس, أحلام الليلي, أميرة البيوني, etc.
+model Collection {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  nameEn        String
+  nameAr        String
+  descriptionEn String?
+  descriptionAr String?
+  coverImageUrl String?
+  featured      Boolean   @default(false)
+  sortOrder     Int       @default(0)
+  bouquets      Bouquet[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([sortOrder])
+  @@index([featured])
+}
+
+// Bouquet <-> Collection is ONE-TO-MANY (one collection per bouquet).
+// V1 reasoning: every seeded bouquet belongs to a single themed collection
+// (e.g. Lily Dream -> Lily Dreams), the storefront groups by one collection,
+// and one-to-many avoids a join table + extra Studio UI. A bouquet can still
+// be re-homed by editing collectionId. Promote to many-to-many later only if
+// real cross-collection merchandising is ever needed.
+model Bouquet {
+  id            String        @id @default(cuid())
+  slug          String        @unique
+  nameEn        String
+  nameAr        String
+  descriptionEn String?
+  descriptionAr String?
+  price         Decimal       @db.Decimal(10, 2)
+  currency      String        @default("SAR")
+  status        BouquetStatus @default(DRAFT)
+  featured      Boolean       @default(false)
+  sortOrder     Int           @default(0)
+  // Optional, simple availability flag only — NOT an inventory engine.
+  inStock       Boolean       @default(true)
+
+  collectionId String?
+  collection   Collection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
+
+  images      BouquetImage[]
+  orderItems  OrderItem[]
+  socialPosts SocialPost[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([sortOrder])
+  @@index([featured])
+  @@index([collectionId])
+}
+
+model BouquetImage {
+  id        String   @id @default(cuid())
+  bouquetId String
+  bouquet   Bouquet  @relation(fields: [bouquetId], references: [id], onDelete: Cascade)
+  url       String
+  altEn     String?
+  altAr     String?
+  isCover   Boolean  @default(false)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([bouquetId])
+  @@index([sortOrder])
+}
+
+// Add-ons: بطاقة حب صغيرة, بوكس شوكولاتة, دمية كيوت, بالون وردي, شريطة لؤلؤية.
+model AddOn {
+  id            String       @id @default(cuid())
+  nameEn        String
+  nameAr        String
+  descriptionEn String?
+  descriptionAr String?
+  price         Decimal      @db.Decimal(10, 2)
+  currency      String       @default("SAR")
+  imageUrl      String?
+  active        Boolean      @default(true)
+  sortOrder     Int          @default(0)
+  orderAddOns   OrderAddOn[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([sortOrder])
+  @@index([active])
+}
+
+// An order is a "Wish" / أمنية. No customer account relation in V1.
+model Order {
+  id            String        @id @default(cuid())
+  // Human-friendly, e.g. "RM-260615-7421". Shown on /[locale]/order/[orderNumber].
+  orderNumber   String        @unique
+  status        OrderStatus   @default(NEW)
+  paymentMethod PaymentMethod @default(WHATSAPP)
+
+  // Sender (the customer placing the wish, and the WhatsApp contact).
+  // OPTIONAL: the spec checkout flow has no dedicated sender step. The checkout
+  // form collects these as a small "Your details" sub-section (§5.4); if left
+  // blank the order still persists. Nullable so createOrder never fails on them.
+  senderName  String?
+  senderPhone String?
+  senderEmail String?
+
+  // Recipient (who receives the bouquet).
+  recipientName  String
+  recipientPhone String?
+
+  // Gift note: single free text is enough for V1 (sender writes in any language).
+  giftNote String?
+
+  // Delivery — Abha, Saudi Arabia.
+  deliveryDate     DateTime
+  deliveryTimeSlot String? // "MORNING" | "AFTERNOON" | "EVENING"
+  area             String? // maps from checkout field `area` (default "Abha / أبها")
+  addressLine      String? // maps from checkout field `addressLine`
+  addressNotes     String?
+
+  // Money — snapshotted totals so historical orders never shift.
+  subtotal Decimal @db.Decimal(10, 2)
+  total    Decimal @db.Decimal(10, 2)
+  currency String  @default("SAR")
+
+  // Add-ons attach PER-ORDER (not per item) in V1 — see decision note below.
+  items  OrderItem[]
+  addOns OrderAddOn[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderNumber])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// Snapshot of a bouquet at time of order (price/name frozen).
+model OrderItem {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  // Optional live link; null-safe if a bouquet is later deleted.
+  bouquetId String?
+  bouquet   Bouquet? @relation(fields: [bouquetId], references: [id], onDelete: SetNull)
+
+  // Frozen snapshot fields.
+  nameEn    String
+  nameAr    String
+  unitPrice Decimal  @db.Decimal(10, 2)
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+// Snapshot of an add-on at time of order.
+model OrderAddOn {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  addOnId String?
+  addOn   AddOn?  @relation(fields: [addOnId], references: [id], onDelete: SetNull)
+
+  nameEn    String
+  nameAr    String
+  unitPrice Decimal  @db.Decimal(10, 2)
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+// Remas Garden / حديقة ريماس — curated posts, no live IG/TikTok sync in V1.
+model SocialPost {
+  id          String         @id @default(cuid())
+  platform    SocialPlatform
+  type        SocialPostType
+  externalUrl String? // null for ORIGINAL_PHOTO
+  imageUrl    String? // uploaded original / thumbnail
+  captionEn   String?
+  captionAr   String?
+
+  bouquetId String?
+  bouquet   Bouquet? @relation(fields: [bouquetId], references: [id], onDelete: SetNull)
+
+  featured      Boolean       @default(false)
+  publishStatus PublishStatus @default(DRAFT)
+  sortOrder     Int           @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([publishStatus])
+  @@index([sortOrder])
+  @@index([featured])
+}
+
+// Boutique Settings / إعدادات البوتيك — flexible key/value (one row per setting).
+// Tiny by design: whatsappNumber, bankDetails, heroTextEn/Ar, etc. live as keys.
+// Bilingual values are stored as separate keys (e.g. "hero.title.en" /
+// "hero.title.ar") so we never need a settings migration to add a field.
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique // e.g. "whatsappNumber", "bankTransferTextAr", "hero.title.ar"
+  value     String // free text / number / JSON-as-string
+  updatedAt DateTime @updatedAt
+}
+
+// SecretPage — content for the hidden /[locale]/for-remas gift page.
+// Single-row table (one secret page). enabled gates visibility;
+// isUnlocked drives the optional hidden sparkle/animation state;
+// showSparkle persists the "optional hidden sparkle interaction" toggle.
+model SecretPage {
+  id          String   @id @default(cuid())
+  titleEn     String   @default("Before this was a boutique, it was your dream.")
+  titleAr     String   @default("قبل ما يكون بوتيك، كان حلمك.")
+  messageEn   String?
+  messageAr   String?
+  enabled     Boolean  @default(true)
+  isUnlocked  Boolean  @default(false)
+  showSparkle Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+}

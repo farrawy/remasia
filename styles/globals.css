@@ -1,0 +1,148 @@
+@import "tailwindcss";
+
+:root {
+  /* ── Raw brand tokens (EXACT, do not change) ───────────────── */
+  --rose-50:  #fff7fb;
+  --rose-100: #ffeaf3;
+  --rose-200: #ffd3e5;
+  --rose-300: #ffabc9;
+  --rose-400: #ff7fb0;
+  --rose-500: #f85b99;
+
+  --pearl:        #fffafc;
+  --cream:        #fff3ea;
+  --soft-lavender:#eadfff;
+  --blush-mist:   #f8dce8;
+  --silver-pink:  #eee8ef;
+
+  --ink:   #3b2230;
+  --muted: #8b6475;
+  --deep-berry: #7a244d;
+
+  --romantic-red: #c9184a;
+  --magic-glow:   #ffb8d5;
+  --fairy-purple: #cdb4ff;
+  --lily-white:   #fffef8;
+
+  /* ── Semantic aliases (components use THESE) ───────────────── */
+  --bg:            var(--rose-50);     /* page background */
+  --surface:       var(--pearl);       /* cards, sheets, Studio panels */
+  --surface-alt:   var(--blush-mist);  /* hovered / nested surfaces */
+  --text:          var(--ink);         /* primary text (never #000) */
+  --text-muted:    var(--muted);       /* secondary text, captions */
+  --accent:        var(--rose-300);    /* default accent / soft buttons */
+  --accent-strong: var(--rose-500);    /* primary CTA, active nav */
+  --accent-deep:   var(--deep-berry);  /* headings on light, emphasis */
+  --danger:        var(--romantic-red);/* cancel / delete in Studio */
+  --line:          var(--silver-pink); /* hairline borders, dividers */
+
+  /* ── Font tokens (the display var is swapped per-direction below) ── */
+  --font-display: var(--font-display-latin);
+
+  /* ── Radii (RAW values — distinct names to avoid a circular @theme self-map) ── */
+  --radius-soft-raw: 1.25rem;
+  --radius-pill-raw: 999px;
+
+  /* ── Soft shadows (the "spoiled/angelic" softness) ── */
+  --shadow-petal: 0 8px 30px -12px rgba(248, 91, 153, 0.35);
+  --shadow-glow:  0 0 0 4px rgba(255, 184, 213, 0.45);
+}
+
+html[dir='rtl'] { --font-display: var(--font-display-arabic); }
+
+@theme inline {
+  /* Rose scale -> bg-rose-50 ... bg-rose-500, text-rose-*, border-rose-* */
+  --color-rose-50:  var(--rose-50);
+  --color-rose-100: var(--rose-100);
+  --color-rose-200: var(--rose-200);
+  --color-rose-300: var(--rose-300);
+  --color-rose-400: var(--rose-400);
+  --color-rose-500: var(--rose-500);
+
+  /* Soft neutrals & accents -> bg-pearl, bg-cream, text-deep-berry, etc. */
+  --color-pearl:        var(--pearl);
+  --color-cream:        var(--cream);
+  --color-soft-lavender:var(--soft-lavender);
+  --color-blush-mist:   var(--blush-mist);
+  --color-silver-pink:  var(--silver-pink);
+
+  --color-ink:        var(--ink);
+  --color-muted:      var(--muted);
+  --color-deep-berry: var(--deep-berry);
+
+  --color-romantic-red: var(--romantic-red);
+  --color-magic-glow:   var(--magic-glow);
+  --color-fairy-purple: var(--fairy-purple);
+  --color-lily-white:   var(--lily-white);
+
+  /* Semantic colors -> bg-bg, bg-surface, text-text, bg-accent, bg-accent-strong */
+  --color-bg:            var(--bg);
+  --color-surface:       var(--surface);
+  --color-surface-alt:   var(--surface-alt);
+  --color-text:          var(--text);
+  --color-text-muted:    var(--text-muted);
+  --color-accent:        var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-deep:   var(--accent-deep);
+  --color-danger:        var(--danger);
+  --color-line:          var(--line);
+
+  /* Fonts -> font-body, font-display.
+     RHS is supplied by next/font (--font-body) and the :root/[dir] swap
+     (--font-display) — a different cascade source, NOT a circular self-map. */
+  --font-body:    var(--font-body);
+  --font-display: var(--font-display);
+
+  /* Radii -> rounded-soft, rounded-pill (point at the distinct *-raw vars) */
+  --radius-soft: var(--radius-soft-raw);
+  --radius-pill: var(--radius-pill-raw);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+@layer components {
+  /* Soft dreamy page wash — homepage hero, for-remas opening */
+  .bg-magic-wash {
+    background:
+      radial-gradient(120% 90% at 15% 0%,  var(--magic-glow) 0%, transparent 55%),
+      radial-gradient(120% 90% at 85% 10%, var(--fairy-purple) 0%, transparent 50%),
+      linear-gradient(180deg, var(--rose-50) 0%, var(--pearl) 100%);
+  }
+
+  /* Princess CTA — primary buttons, "Send my wish", "Open Your Boutique" */
+  .btn-magic {
+    background: linear-gradient(135deg, var(--rose-400) 0%, var(--rose-500) 60%, var(--romantic-red) 130%);
+    color: var(--lily-white);
+    border-radius: var(--radius-pill-raw);
+    box-shadow: var(--shadow-petal);
+    transition: box-shadow .3s ease, transform .3s ease;
+  }
+  .btn-magic:hover {
+    box-shadow: var(--shadow-petal), var(--shadow-glow);
+    transform: translateY(-1px);
+  }
+
+  /* Fairy glow halo — featured bouquet cards, garden featured posts */
+  .glow-fairy {
+    box-shadow:
+      0 0 24px -6px var(--magic-glow),
+      0 0 48px -18px var(--fairy-purple);
+  }
+
+  /* Lavender→blush dreamy panel — collection headers, Studio "Today's Magic" */
+  .bg-dream-panel {
+    background: linear-gradient(135deg, var(--soft-lavender) 0%, var(--blush-mist) 55%, var(--rose-100) 100%);
+  }
+
+  /* Pearl card — default product/collection card surface */
+  .card-pearl {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-soft-raw);
+    box-shadow: var(--shadow-petal);
+  }
+}

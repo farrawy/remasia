@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Remasia logo mark (placeholder)">
+  <!-- PLACEHOLDER logo mark — replace with final Remasia art. -->
+  <circle cx="48" cy="48" r="46" fill="#fff7fb" stroke="#ffd3e5" stroke-width="2"/>
+  <g fill="#ff7fb0">
+    <ellipse cx="48" cy="30" rx="10" ry="16"/>
+    <ellipse cx="48" cy="66" rx="10" ry="16"/>
+    <ellipse cx="30" cy="48" rx="16" ry="10"/>
+    <ellipse cx="66" cy="48" rx="16" ry="10"/>
+  </g>
+  <circle cx="48" cy="48" r="9" fill="#f85b99"/>
+</svg>

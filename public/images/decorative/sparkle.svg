@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sparkle decoration (placeholder)">
+  <!-- PLACEHOLDER decorative sparkle — replace with final art. -->
+  <path d="M32 6 C35 24 40 29 58 32 C40 35 35 40 32 58 C29 40 24 35 6 32 C24 29 29 24 32 6 Z" fill="#ffb8d5"/>
+  <circle cx="50" cy="14" r="3" fill="#cdb4ff"/>
+  <circle cx="14" cy="48" r="2.5" fill="#cdb4ff"/>
+</svg>

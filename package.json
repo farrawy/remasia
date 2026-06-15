@@ -1,0 +1,46 @@
+{
+  "name": "remasia",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Remasia / ريماسيا — a little flower world for soft hearts.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "prisma db seed"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.4.0",
+    "@phosphor-icons/react": "^2.1.10",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@uploadthing/react": "^7.3.3",
+    "bcryptjs": "^3.0.3",
+    "framer-motion": "^12.40.0",
+    "next": "^16.2.9",
+    "next-intl": "^4.13.0",
+    "pg": "^8.13.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-hook-form": "^7.79.0",
+    "uploadthing": "^7.7.4",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.1",
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.11.10",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "dotenv": "^16.6.1",
+    "prisma": "^7.8.0",
+    "tailwindcss": "^4.3.1",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.0"
+  }
+}

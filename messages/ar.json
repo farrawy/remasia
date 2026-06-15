@@ -1,0 +1,54 @@
+{
+  "common": {
+    "brand": "ريماسيا",
+    "tagline": "عالم صغير من الورد للقلوب الناعمة.",
+    "currency": "ر.س",
+    "addToCart": "أضيفي إلى حقيبة الباقة",
+    "viewBouquet": "عرض الباقة"
+  },
+  "nav": { "home": "الرئيسية", "shop": "المتجر", "garden": "حديقة ريماس", "cart": "الحقيبة" },
+  "studioNav": {
+    "todaysMagic": "سحر اليوم",
+    "wishes": "الأمنيات",
+    "bouquets": "الباقات",
+    "collections": "المجموعات",
+    "addOns": "الإضافات",
+    "garden": "حديقة ريماس",
+    "settings": "إعدادات البوتيك",
+    "secretPage": "الصفحة السرية"
+  },
+  "shop": {
+    "allCollections": "كل المجموعات",
+    "empty": "لا توجد باقات هنا بعد — ما زالت تتفتّح."
+  },
+  "checkout": {
+    "stepBouquet": "الباقة",
+    "stepAddOns": "الإضافات",
+    "stepGiftNote": "بطاقة الإهداء",
+    "stepRecipient": "بيانات المستلم",
+    "stepSender": "بياناتك (اختياري)",
+    "stepDelivery": "تاريخ ووقت التوصيل",
+    "stepMethod": "طريقة الطلب",
+    "submit": "أرسلي أمنيتي",
+    "method": {
+      "WHATSAPP": "اطلبي عبر واتساب",
+      "BANK_TRANSFER": "تحويل بنكي",
+      "CASH_ON_DELIVERY": "الدفع عند الاستلام",
+      "ONLINE_PLACEHOLDER": "الدفع أونلاين (قريباً)"
+    }
+  },
+  "orderStatus": {
+    "NEW": "أمنية جديدة",
+    "CONFIRMED": "مؤكد",
+    "PREPARING": "جاري تجهيز الباقة",
+    "READY": "جاهز",
+    "DELIVERED": "تم التسليم بحب",
+    "CANCELLED": "ملغي"
+  },
+  "garden": { "homepageTitle": "من حديقة ريماس", "featured": "مميز" },
+  "forRemas": {
+    "title": "قبل ما يكون بوتيك، كان حلمك.",
+    "openBoutique": "افتحي بوتيكك",
+    "enterStudio": "ادخلي الاستديو"
+  }
+}

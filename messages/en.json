@@ -1,0 +1,54 @@
+{
+  "common": {
+    "brand": "Remasia",
+    "tagline": "A little flower world for soft hearts.",
+    "currency": "SAR",
+    "addToCart": "Add to bouquet bag",
+    "viewBouquet": "View bouquet"
+  },
+  "nav": { "home": "Home", "shop": "Shop", "garden": "Remas Garden", "cart": "Bag" },
+  "studioNav": {
+    "todaysMagic": "Today's Magic",
+    "wishes": "Wishes",
+    "bouquets": "Bouquets",
+    "collections": "Collections",
+    "addOns": "Add-ons",
+    "garden": "Remas Garden",
+    "settings": "Boutique Settings",
+    "secretPage": "Secret Page"
+  },
+  "shop": {
+    "allCollections": "All collections",
+    "empty": "No bouquets here yet — they're still blooming."
+  },
+  "checkout": {
+    "stepBouquet": "Bouquet",
+    "stepAddOns": "Add-ons",
+    "stepGiftNote": "Gift note",
+    "stepRecipient": "Recipient details",
+    "stepSender": "Your details (optional)",
+    "stepDelivery": "Delivery date & time",
+    "stepMethod": "Order method",
+    "submit": "Send my wish",
+    "method": {
+      "WHATSAPP": "Order on WhatsApp",
+      "BANK_TRANSFER": "Bank transfer",
+      "CASH_ON_DELIVERY": "Cash on delivery",
+      "ONLINE_PLACEHOLDER": "Pay online (soon)"
+    }
+  },
+  "orderStatus": {
+    "NEW": "New Wish",
+    "CONFIRMED": "Confirmed",
+    "PREPARING": "Preparing Bouquet",
+    "READY": "Ready",
+    "DELIVERED": "Delivered with Love",
+    "CANCELLED": "Cancelled"
+  },
+  "garden": { "homepageTitle": "From Remas's Garden", "featured": "Featured" },
+  "forRemas": {
+    "title": "Before this was a boutique, it was your dream.",
+    "openBoutique": "Open Your Boutique",
+    "enterStudio": "Enter Your Studio"
+  }
+}
