@@ -1,5 +1,10 @@
 import type {Locale} from '@/i18n/routing';
 
+/** Tiny className joiner (filters falsy). */
+export function cn(...classes: Array<string | false | null | undefined>): string {
+  return classes.filter(Boolean).join(' ');
+}
+
 /**
  * Prisma `Decimal` is not serializable across the Server/Client Component
  * boundary. ALWAYS convert money to a plain number before passing it to a
@@ -21,10 +26,10 @@ export function formatPrice(
 ): string {
   const amount = serializeDecimal(value);
   const symbol = locale === 'ar' ? 'ر.س' : currency;
-  const n = new Intl.NumberFormat(locale === 'ar' ? 'ar-SA' : 'en-US', {
-    maximumFractionDigits: 2
-  }).format(amount);
-  return locale === 'ar' ? `${n} ${symbol}` : `${n} ${symbol}`;
+  // Western numerals in BOTH locales (Saudi e-commerce norm) — only the currency
+  // word localizes. See prep doc §7.3 (don't force Eastern-Arabic numerals).
+  const n = new Intl.NumberFormat('en-US', {maximumFractionDigits: 2}).format(amount);
+  return `${n} ${symbol}`;
 }
 
 /** URL-safe slug from a (Latin) name. Arabic slugs are intentionally not used (V1). */

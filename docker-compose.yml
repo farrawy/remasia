@@ -1,0 +1,19 @@
+# Local dev database for Remasia.
+#   docker compose up -d
+# Host port 5433 (5432 is often taken) -> matches DATABASE_URL in .env.example.
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: remasia-pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: remasia
+      POSTGRES_PASSWORD: remasia
+      POSTGRES_DB: remasia
+    ports:
+      - '5433:5432'
+    volumes:
+      - remasia-pgdata:/var/lib/postgresql/data
+
+volumes:
+  remasia-pgdata:

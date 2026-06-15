@@ -21,14 +21,17 @@ custom cookie-session auth.
 ```bash
 npm install
 
-# 1) Configure the database + secrets
+# 1) Configure secrets (the default DATABASE_URL already targets the docker DB below)
 cp .env.example .env
-#    then edit .env → set DATABASE_URL (Postgres), SESSION_SECRET, UPLOADTHING_TOKEN
+#    edit .env → set SESSION_SECRET, UPLOADTHING_TOKEN (DATABASE_URL works as-is for local)
 
-# 2) Generate the Prisma client, push the schema, seed
+# 2) Start the local Postgres (host port 5433)
+docker compose up -d
+
+# 3) Generate the Prisma client, push the schema, seed
 npm run db:generate
-npm run db:push      # needs a live DATABASE_URL
-npm run db:seed      # seeds 6 collections, 8 bouquets, 5 add-ons, 1 admin, settings
+npm run db:push
+npm run db:seed      # seeds 6 collections, 8 bouquets, 5 add-ons, 1 admin, settings, secret page
 ```
 
 The seeded Studio login is **password-only** (single admin). Default seed password

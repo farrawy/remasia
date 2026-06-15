@@ -146,3 +146,67 @@ body {
     box-shadow: var(--shadow-petal);
   }
 }
+
+/* ── Base polish ─────────────────────────────────────────────── */
+@layer base {
+  * { -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+  body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  ::selection { background: var(--magic-glow); color: var(--deep-berry); }
+  :focus-visible {
+    outline: 2px solid var(--accent-strong);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  ::-webkit-scrollbar { width: 12px; height: 12px; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--rose-200);
+    border-radius: 999px;
+    border: 3px solid var(--bg);
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--rose-300); }
+}
+
+/* ── Motion + decorative helpers ─────────────────────────────── */
+@layer components {
+  .container-px { padding-inline: 1.25rem; }
+  @media (min-width: 768px) { .container-px { padding-inline: 2.5rem; } }
+
+  /* a soft beveled "Featured" ribbon for blooms */
+  .ribbon {
+    background: linear-gradient(135deg, var(--rose-400), var(--rose-500));
+    color: var(--lily-white);
+    box-shadow: var(--shadow-petal);
+  }
+
+  /* faint petal texture behind sections */
+  .bg-petal-field {
+    background-image:
+      radial-gradient(circle at 20% 30%, var(--blush-mist) 0, transparent 9px),
+      radial-gradient(circle at 75% 60%, var(--soft-lavender) 0, transparent 7px),
+      radial-gradient(circle at 50% 85%, var(--rose-100) 0, transparent 8px);
+    background-size: 220px 220px, 280px 280px, 200px 200px;
+  }
+}
+
+@keyframes bloomUp {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.8); }
+  50%      { opacity: 1;    transform: scale(1.12); }
+}
+
+.bloom { animation: bloomUp 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.float-slow { animation: floaty 6s ease-in-out infinite; }
+.twinkle { animation: twinkle 3.6s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bloom, .float-slow, .twinkle { animation: none !important; }
+  html { scroll-behavior: auto; }
+}

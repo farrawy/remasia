@@ -18,8 +18,23 @@
     "secretPage": "Secret Page"
   },
   "shop": {
+    "title": "The Boutique",
+    "kicker": "Every bloom, in one place",
     "allCollections": "All collections",
     "empty": "No bouquets here yet — they're still blooming."
+  },
+  "home": {
+    "heroKicker": "A little flower world",
+    "collectionsKicker": "Wander the garden",
+    "collectionsTitle": "Our Collections",
+    "featuredKicker": "Hand-tied with love",
+    "featuredTitle": "Featured Bouquets",
+    "shopAll": "See all bouquets"
+  },
+  "collection": { "bouquets": "{count} bouquets" },
+  "product": {
+    "backToShop": "Back to the boutique",
+    "addToCart": "Add to bouquet bag"
   },
   "checkout": {
     "stepBouquet": "Bouquet",

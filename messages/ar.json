@@ -18,8 +18,23 @@
     "secretPage": "الصفحة السرية"
   },
   "shop": {
+    "title": "البوتيك",
+    "kicker": "كل الورود في مكان واحد",
     "allCollections": "كل المجموعات",
     "empty": "لا توجد باقات هنا بعد — ما زالت تتفتّح."
+  },
+  "home": {
+    "heroKicker": "عالم صغير من الورد",
+    "collectionsKicker": "تجوّلي في الحديقة",
+    "collectionsTitle": "مجموعاتنا",
+    "featuredKicker": "مربوطة يدوياً بحب",
+    "featuredTitle": "باقات مميزة",
+    "shopAll": "كل الباقات"
+  },
+  "collection": { "bouquets": "{count} باقة" },
+  "product": {
+    "backToShop": "العودة إلى البوتيك",
+    "addToCart": "أضيفي إلى حقيبة الباقة"
   },
   "checkout": {
     "stepBouquet": "الباقة",
