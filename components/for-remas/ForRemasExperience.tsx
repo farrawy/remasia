@@ -8,6 +8,8 @@ import {Link} from '@/i18n/navigation';
 import {Bloom} from '@/components/ui/Bloom';
 import {cn} from '@/lib/utils';
 import type {Locale} from '@/i18n/routing';
+import {getLetterContent} from './content';
+import {LetterSections} from './sections';
 
 const PETAL_PATH = 'M0 4 C 9 -8 9 -22 0 -28 C -9 -22 -9 -8 0 4 Z';
 
@@ -19,14 +21,14 @@ function PetalSVG({className}: {className?: string}) {
   );
 }
 
-// ── Deterministic decor (SSR-safe — no Math.random in render) ──
-const FLOATERS = Array.from({length: 20}, (_, i) => ({
+// ── Deterministic ambient decor (SSR-safe) ───────────────────
+const FLOATERS = Array.from({length: 18}, (_, i) => ({
   id: i,
   left: (i * 53 + 7) % 100,
-  size: 14 + ((i * 11) % 26),
-  duration: 11 + ((i * 7) % 12),
-  delay: (i * 0.9) % 10,
-  opacity: 0.3 + ((i * 17) % 45) / 100,
+  size: 14 + ((i * 11) % 24),
+  duration: 13 + ((i * 7) % 12),
+  delay: (i * 0.9) % 12,
+  opacity: 0.26 + ((i * 17) % 40) / 100,
   kind: i % 5 // 0 petal · 1 sparkle · 2 heart · 3 bloom · 4 butterfly
 }));
 
@@ -38,15 +40,15 @@ const STARS = Array.from({length: 26}, (_, i) => ({
 }));
 
 const ORBS = [
-  {size: 360, color: 'rgba(255,184,213,0.50)', x: '8%', y: '12%', dur: 17, dx: 44, dy: 30},
-  {size: 320, color: 'rgba(205,180,255,0.50)', x: '74%', y: '18%', dur: 21, dx: -52, dy: 40},
-  {size: 400, color: 'rgba(201,24,74,0.40)', x: '46%', y: '86%', dur: 19, dx: 30, dy: -44},
-  {size: 260, color: 'rgba(255,243,234,0.35)', x: '86%', y: '68%', dur: 23, dx: -34, dy: -28}
+  {size: 360, color: 'rgba(255,184,213,0.42)', x: '8%', y: '12%', dur: 17, dx: 44, dy: 30},
+  {size: 320, color: 'rgba(205,180,255,0.42)', x: '74%', y: '20%', dur: 21, dx: -52, dy: 40},
+  {size: 400, color: 'rgba(201,24,74,0.34)', x: '46%', y: '78%', dur: 19, dx: 30, dy: -44},
+  {size: 260, color: 'rgba(255,243,234,0.28)', x: '86%', y: '66%', dur: 23, dx: -34, dy: -28}
 ];
 
 const CLOUDS = [
-  {w: 300, h: 90, x: '-6%', y: '22%', dur: 40, dx: 60},
-  {w: 240, h: 70, x: '70%', y: '60%', dur: 52, dx: -50}
+  {w: 300, h: 90, x: '-6%', y: '22%', dur: 42, dx: 60},
+  {w: 240, h: 70, x: '70%', y: '60%', dur: 54, dx: -50}
 ];
 
 function Floater({left, size, duration, delay, opacity, kind}: (typeof FLOATERS)[number]) {
@@ -58,7 +60,7 @@ function Floater({left, size, duration, delay, opacity, kind}: (typeof FLOATERS)
   else node = <PetalSVG className="size-full text-magic-glow" />;
   return (
     <motion.div
-      className="pointer-events-none absolute top-0"
+      className="absolute top-0"
       style={{left: `${left}%`, width: size, height: size, opacity}}
       initial={{y: '-15vh', rotate: 0}}
       animate={{y: '116vh', rotate: 360}}
@@ -76,7 +78,6 @@ function BloomCenter({reduce}: {reduce: boolean}) {
   });
   return (
     <div className="relative grid place-items-center">
-      {/* breathing halo */}
       {!reduce ? (
         <motion.div
           className="absolute size-60 rounded-full blur-3xl"
@@ -85,7 +86,6 @@ function BloomCenter({reduce}: {reduce: boolean}) {
           transition={{duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.6}}
         />
       ) : null}
-      {/* entry glow */}
       <motion.div
         className="absolute size-64 rounded-full blur-3xl"
         style={{background: 'radial-gradient(circle, rgba(255,184,213,0.75), transparent 70%)'}}
@@ -93,7 +93,6 @@ function BloomCenter({reduce}: {reduce: boolean}) {
         animate={{scale: [0, 1.1, 1], opacity: [0, 0.9, 0.6]}}
         transition={{duration: 1.8, ease: 'easeOut'}}
       />
-      {/* one-time opening petal burst */}
       {!reduce
         ? burst.map((b, i) => (
             <motion.div
@@ -107,7 +106,6 @@ function BloomCenter({reduce}: {reduce: boolean}) {
             </motion.div>
           ))
         : null}
-      {/* blooming flower (opens, then slowly turns) */}
       <motion.div
         initial={reduce ? {opacity: 0} : {scale: 0, rotate: -150, opacity: 0}}
         animate={reduce ? {opacity: 1} : {scale: 1, rotate: 0, opacity: 1}}
@@ -135,11 +133,7 @@ function Particle({x, y, kind}: {x: number; y: number; kind: number}) {
       exit={{opacity: 0}}
       transition={{duration: 0.95, ease: 'easeOut'}}
     >
-      {kind ? (
-        <Sparkle weight="fill" className="size-3 text-magic-glow" />
-      ) : (
-        <PetalSVG className="size-3 text-rose-300" />
-      )}
+      {kind ? <Sparkle weight="fill" className="size-3 text-magic-glow" /> : <PetalSVG className="size-3 text-rose-300" />}
     </motion.div>
   );
 }
@@ -172,7 +166,8 @@ const reveal = (delay: number) => ({
 export function ForRemasExperience({
   title,
   message,
-  showSparkle
+  showSparkle,
+  locale
 }: {
   title: string;
   message: string;
@@ -181,9 +176,11 @@ export function ForRemasExperience({
 }) {
   const t = useTranslations('forRemas');
   const reduce = useReducedMotion() ?? false;
+  const content = getLetterContent(locale);
   const [bursts, setBursts] = useState<{id: number; x: number; y: number}[]>([]);
   const [trail, setTrail] = useState<{id: number; x: number; y: number; kind: number}[]>([]);
   const [revealed, setRevealed] = useState(false);
+  const [flowerSecret, setFlowerSecret] = useState(false);
   const lastTrail = useRef(0);
 
   function spawnSparkle(e: MouseEvent) {
@@ -192,7 +189,6 @@ export function ForRemasExperience({
     setBursts((b) => [...b, {id, x: e.clientX, y: e.clientY}]);
     window.setTimeout(() => setBursts((b) => b.filter((p) => p.id !== id)), 1300);
   }
-
   function onMove(e: MouseEvent) {
     if (!showSparkle || reduce) return;
     const now = Date.now();
@@ -206,80 +202,96 @@ export function ForRemasExperience({
   const words = title.split(' ');
 
   return (
-    <main
-      onClick={spawnSparkle}
-      onMouseMove={onMove}
-      className="relative min-h-dvh overflow-hidden text-center"
-      style={{
-        background:
-          'radial-gradient(70% 55% at 28% 18%, rgba(205,180,255,0.50), transparent 60%),' +
-          'radial-gradient(65% 55% at 82% 26%, rgba(255,184,213,0.45), transparent 58%),' +
-          'radial-gradient(95% 80% at 50% 116%, rgba(201,24,74,0.55), transparent 62%),' +
-          'linear-gradient(165deg, #7a244d 0%, #3b2230 48%, #5e1f3c 100%)'
-      }}
+    <div
+      className="relative min-h-dvh overflow-hidden text-pearl"
+      style={{background: 'linear-gradient(180deg, #5e1f3c 0%, #3b2230 45%, #4a1a30 100%)'}}
     >
-      {/* aurora glow orbs */}
-      {!reduce
-        ? ORBS.map((o, i) => (
-            <motion.div
-              key={`orb${i}`}
-              className="pointer-events-none absolute rounded-full blur-3xl"
-              style={{
-                width: o.size,
-                height: o.size,
-                left: o.x,
-                top: o.y,
-                background: `radial-gradient(circle, ${o.color}, transparent 70%)`
-              }}
-              animate={{x: [0, o.dx, 0], y: [0, o.dy, 0], scale: [1, 1.15, 1]}}
-              transition={{duration: o.dur, repeat: Infinity, ease: 'easeInOut'}}
-            />
-          ))
-        : null}
-
-      {/* soft drifting clouds */}
-      {!reduce
-        ? CLOUDS.map((c, i) => (
-            <motion.div
-              key={`cloud${i}`}
-              className="pointer-events-none absolute rounded-full bg-pearl/10 blur-2xl"
-              style={{width: c.w, height: c.h, left: c.x, top: c.y}}
-              animate={{x: [0, c.dx, 0]}}
-              transition={{duration: c.dur, repeat: Infinity, ease: 'easeInOut'}}
-            />
-          ))
-        : null}
-
-      {/* twinkling stars */}
-      {STARS.map((s, i) => (
-        <span
-          key={`star${i}`}
-          className={cn('pointer-events-none absolute rounded-full bg-pearl', !reduce && 'twinkle')}
-          style={{left: `${s.left}%`, top: `${s.top}%`, width: s.size, height: s.size, animationDelay: `${s.delay}s`}}
+      {/* fixed ambient — persists across the whole scroll */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(70% 50% at 28% 14%, rgba(205,180,255,0.40), transparent 60%),' +
+              'radial-gradient(60% 50% at 82% 22%, rgba(255,184,213,0.34), transparent 58%),' +
+              'radial-gradient(80% 55% at 50% 92%, rgba(201,24,74,0.34), transparent 62%)'
+          }}
         />
-      ))}
+        {!reduce
+          ? ORBS.map((o, i) => (
+              <motion.div
+                key={`orb${i}`}
+                className="absolute rounded-full blur-3xl"
+                style={{width: o.size, height: o.size, left: o.x, top: o.y, background: `radial-gradient(circle, ${o.color}, transparent 70%)`}}
+                animate={{x: [0, o.dx, 0], y: [0, o.dy, 0], scale: [1, 1.15, 1]}}
+                transition={{duration: o.dur, repeat: Infinity, ease: 'easeInOut'}}
+              />
+            ))
+          : null}
+        {!reduce
+          ? CLOUDS.map((c, i) => (
+              <motion.div
+                key={`cloud${i}`}
+                className="absolute rounded-full bg-pearl/10 blur-2xl"
+                style={{width: c.w, height: c.h, left: c.x, top: c.y}}
+                animate={{x: [0, c.dx, 0]}}
+                transition={{duration: c.dur, repeat: Infinity, ease: 'easeInOut'}}
+              />
+            ))
+          : null}
+        {STARS.map((s, i) => (
+          <span
+            key={`star${i}`}
+            className={cn('absolute rounded-full bg-pearl', !reduce && 'twinkle')}
+            style={{left: `${s.left}%`, top: `${s.top}%`, width: s.size, height: s.size, animationDelay: `${s.delay}s`}}
+          />
+        ))}
+        {!reduce ? FLOATERS.map((f) => <Floater key={f.id} {...f} />) : null}
+        <div
+          className="absolute inset-0"
+          style={{background: 'radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(59,34,48,0.6) 100%)'}}
+        />
+      </div>
 
-      {/* drifting decor */}
-      {!reduce ? FLOATERS.map((f) => <Floater key={f.id} {...f} />) : null}
-
-      {/* vignette */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{background: 'radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(59,34,48,0.55) 100%)'}}
-      />
-
-      <div className="relative z-10 mx-auto flex min-h-dvh max-w-2xl flex-col items-center justify-center container-px py-16">
+      {/* ── HERO (unchanged spirit; interactions scoped here) ── */}
+      <section
+        onClick={spawnSparkle}
+        onMouseMove={onMove}
+        className="relative z-10 mx-auto flex min-h-dvh max-w-2xl flex-col items-center justify-center container-px py-16 text-center"
+      >
         <motion.span {...reveal(0.1)} className="mb-10 font-display text-2xl text-pearl/90">
           Remasia
         </motion.span>
 
-        <BloomCenter reduce={reduce} />
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setFlowerSecret(true);
+          }}
+          aria-label={content.secrets.flower}
+          className="cursor-pointer"
+        >
+          <BloomCenter reduce={reduce} />
+        </button>
+        <div className="mt-3 flex min-h-5 items-center justify-center">
+          <AnimatePresence>
+            {flowerSecret ? (
+              <motion.p
+                initial={{opacity: 0, y: 6}}
+                animate={{opacity: 1, y: 0}}
+                className="text-xs italic text-pearl/70"
+              >
+                {content.secrets.flower}
+              </motion.p>
+            ) : null}
+          </AnimatePresence>
+        </div>
 
-        <motion.p {...reveal(0.9)} className="mt-9 text-sm tracking-[0.15em] text-magic-glow">
+        <motion.p {...reveal(0.9)} className="mt-6 text-sm tracking-[0.15em] text-magic-glow">
           {t('kicker')}
         </motion.p>
 
-        {/* title: word-by-word blur-bloom reveal + breathing glow */}
         {reduce ? (
           <h1 className="mt-3 max-w-xl font-display text-4xl leading-tight text-pearl md:text-6xl">{title}</h1>
         ) : (
@@ -316,7 +328,7 @@ export function ForRemasExperience({
           </Link>
           <Link
             href="/studio/login"
-            className="rounded-pill border border-pearl/40 bg-pearl/10 px-8 py-3.5 font-display text-lg text-pearl backdrop-blur transition-colors hover:bg-pearl/20"
+            className="rounded-pill border border-white/40 bg-white/10 px-8 py-3.5 font-display text-lg text-pearl backdrop-blur transition-colors hover:bg-white/20"
           >
             {t('enterStudio')}
           </Link>
@@ -348,13 +360,7 @@ export function ForRemasExperience({
                   {t('secret')}
                 </motion.p>
               ) : (
-                <motion.span
-                  key="hint"
-                  initial={{opacity: 0}}
-                  animate={{opacity: 0.7}}
-                  exit={{opacity: 0}}
-                  className="text-xs text-pearl/60"
-                >
+                <motion.span key="hint" initial={{opacity: 0}} animate={{opacity: 0.7}} exit={{opacity: 0}} className="text-xs text-pearl/60">
                   {t('secretHint')}
                 </motion.span>
               )}
@@ -362,24 +368,17 @@ export function ForRemasExperience({
           </motion.div>
         ) : null}
 
-        <motion.p {...reveal(2.7)} className="mt-12 text-sm text-pearl/55">
-          {t('signature')}
-        </motion.p>
-      </div>
+        <motion.span {...reveal(2.7)} className="mt-12 text-xs text-pearl/45">
+          ↓
+        </motion.span>
+      </section>
 
-      {/* cursor trail */}
-      <AnimatePresence>
-        {trail.map((p) => (
-          <Particle key={p.id} x={p.x} y={p.y} kind={p.kind} />
-        ))}
-      </AnimatePresence>
+      {/* ── The love letter ── */}
+      <LetterSections content={content} />
 
-      {/* touch sparkle bursts */}
-      <AnimatePresence>
-        {bursts.map((b) => (
-          <SparkleBurst key={b.id} x={b.x} y={b.y} />
-        ))}
-      </AnimatePresence>
-    </main>
+      {/* interaction layers */}
+      <AnimatePresence>{trail.map((p) => <Particle key={p.id} x={p.x} y={p.y} kind={p.kind} />)}</AnimatePresence>
+      <AnimatePresence>{bursts.map((b) => <SparkleBurst key={b.id} x={b.x} y={b.y} />)}</AnimatePresence>
+    </div>
   );
 }
