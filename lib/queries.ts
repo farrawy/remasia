@@ -42,6 +42,8 @@ export type BouquetView = {
 
 export type GardenPostView = {
   id: string;
+  type: string;
+  externalUrl: string | null;
   imageUrl: string | null;
   captionEn: string | null;
   captionAr: string | null;
@@ -138,7 +140,7 @@ export async function getBouquetBySlug(slug: string): Promise<BouquetView | null
 }
 
 // ── Garden ───────────────────────────────────────────────────
-export async function getGardenPosts(limit = 8): Promise<GardenPostView[]> {
+export async function getGardenPosts(limit?: number): Promise<GardenPostView[]> {
   const rows = await prisma.socialPost.findMany({
     where: {publishStatus: 'PUBLISHED'},
     orderBy: [{featured: 'desc'}, {sortOrder: 'asc'}],
@@ -146,7 +148,9 @@ export async function getGardenPosts(limit = 8): Promise<GardenPostView[]> {
   });
   return rows.map((p) => ({
     id: p.id,
-    imageUrl: p.imageUrl,
+    type: p.type,
+    externalUrl: p.externalUrl,
+    imageUrl: coverOrNull(p.imageUrl),
     captionEn: p.captionEn,
     captionAr: p.captionAr,
     featured: p.featured
