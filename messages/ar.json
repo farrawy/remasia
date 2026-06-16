@@ -185,7 +185,121 @@
       "cancel": "إلغاء",
       "errorSlug": "هذا المعرّف مستخدم بالفعل.",
       "errorGeneric": "يرجى مراجعة النموذج."
+    },
+    "common": {
+      "delete": "حذف",
+      "confirmDelete": "نعم، احذفي",
+      "cancel": "إلغاء"
+    },
+    "collections": {
+      "title": "المجموعات",
+      "new": "مجموعة جديدة",
+      "empty": "لا توجد مجموعات بعد.",
+      "count": "{count} باقة"
+    },
+    "collectionForm": {
+      "back": "العودة إلى المجموعات",
+      "newTitle": "مجموعة جديدة",
+      "editTitle": "تعديل المجموعة",
+      "nameAr": "الاسم (عربي)",
+      "nameEn": "الاسم (إنجليزي)",
+      "descriptionAr": "الوصف (عربي)",
+      "descriptionEn": "الوصف (إنجليزي)",
+      "slug": "المعرّف",
+      "slugHint": "يُستخدم في الرابط — أحرف إنجليزية صغيرة وشرطات",
+      "featured": "مميزة في المتجر",
+      "cover": "صورة الغلاف",
+      "coverUrl": "مسار/رابط صورة الغلاف",
+      "coverHint": "مثال: /images/collections/...webp",
+      "save": "حفظ المجموعة",
+      "saving": "جارٍ الحفظ…",
+      "errorSlug": "هذا المعرّف مستخدم بالفعل.",
+      "errorGeneric": "يرجى مراجعة النموذج."
+    },
+    "addOns": {
+      "title": "الإضافات",
+      "new": "إضافة جديدة",
+      "empty": "لا توجد إضافات بعد.",
+      "inactive": "مخفية"
+    },
+    "addOnForm": {
+      "back": "العودة إلى الإضافات",
+      "newTitle": "إضافة جديدة",
+      "editTitle": "تعديل الإضافة",
+      "nameAr": "الاسم (عربي)",
+      "nameEn": "الاسم (إنجليزي)",
+      "price": "السعر (ر.س)",
+      "image": "مسار/رابط الصورة",
+      "imageHint": "اختياري — مثال: /images/addons/...webp",
+      "active": "متاحة عند الطلب",
+      "save": "حفظ الإضافة",
+      "saving": "جارٍ الحفظ…",
+      "errorGeneric": "يرجى مراجعة النموذج."
+    },
+    "garden": {
+      "title": "حديقة ريماس",
+      "new": "منشور جديد",
+      "empty": "لا توجد منشورات بعد.",
+      "published": "منشور",
+      "draft": "مسودة"
+    },
+    "gardenForm": {
+      "back": "العودة إلى الحديقة",
+      "newTitle": "منشور جديد",
+      "editTitle": "تعديل المنشور",
+      "type": "النوع",
+      "url": "رابط المنشور",
+      "urlHint": "الصقي رابط إنستغرام أو تيك توك",
+      "captionAr": "التعليق (عربي)",
+      "captionEn": "التعليق (إنجليزي)",
+      "bouquet": "الباقة المرتبطة",
+      "noBouquet": "بدون",
+      "status": "الظهور",
+      "draft": "مسودة",
+      "published": "منشور",
+      "featured": "مميز",
+      "photo": "الصورة",
+      "photoUrl": "مسار/رابط الصورة",
+      "photoHint": "مثال: /images/garden/...webp",
+      "save": "حفظ المنشور",
+      "saving": "جارٍ الحفظ…",
+      "errorGeneric": "يرجى مراجعة النموذج."
+    },
+    "settingsForm": {
+      "title": "إعدادات البوتيك",
+      "subtitle": "التفاصيل الصغيرة اللي تدير بوتيكك",
+      "whatsapp": "رقم واتساب",
+      "whatsappHint": "مع رمز الدولة، مثال 9665XXXXXXXX — يشغّل رابط الطلب",
+      "boutiqueName": "اسم البوتيك",
+      "instagram": "رابط إنستغرام",
+      "tiktok": "رابط تيك توك",
+      "bankAr": "نص التحويل البنكي (عربي)",
+      "bankEn": "نص التحويل البنكي (إنجليزي)",
+      "currency": "العملة",
+      "save": "حفظ الإعدادات",
+      "saving": "جارٍ الحفظ…",
+      "saved": "تم الحفظ 🌸",
+      "errorGeneric": "يرجى مراجعة النموذج."
+    },
+    "secretForm": {
+      "title": "الصفحة السرية",
+      "subtitle": "صفحة الهدية المخفية في /for-remas",
+      "titleAr": "العنوان (عربي)",
+      "titleEn": "العنوان (إنجليزي)",
+      "messageAr": "الرسالة (عربي)",
+      "messageEn": "الرسالة (إنجليزي)",
+      "showSparkle": "تفعيل اللمسات السحرية المخفية",
+      "save": "حفظ الصفحة السرية",
+      "saving": "جارٍ الحفظ…",
+      "saved": "تم الحفظ 🌸",
+      "preview": "معاينة",
+      "errorGeneric": "يرجى مراجعة النموذج."
     }
+  },
+  "socialType": {
+    "ORIGINAL_PHOTO": "صورة أصلية",
+    "INSTAGRAM_EMBED": "منشور إنستغرام",
+    "TIKTOK_EMBED": "فيديو تيك توك"
   },
   "bouquetStatus": {
     "DRAFT": "مسودة",

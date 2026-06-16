@@ -258,6 +258,107 @@ export async function getCollectionOptions() {
   return rows.map((c) => ({id: c.id, nameEn: c.nameEn, nameAr: c.nameAr}));
 }
 
+// ── Remas Studio — collections ───────────────────────────────
+export async function getStudioCollections() {
+  const rows = await prisma.collection.findMany({
+    orderBy: {sortOrder: 'asc'},
+    include: {_count: {select: {bouquets: true}}}
+  });
+  return rows.map((c) => ({
+    id: c.id,
+    slug: c.slug,
+    nameEn: c.nameEn,
+    nameAr: c.nameAr,
+    featured: c.featured,
+    coverUrl: coverOrNull(c.coverImageUrl),
+    bouquetCount: c._count.bouquets
+  }));
+}
+
+export async function getStudioCollection(id: string) {
+  const c = await prisma.collection.findUnique({where: {id}});
+  if (!c) return null;
+  return {
+    id: c.id,
+    slug: c.slug,
+    nameEn: c.nameEn,
+    nameAr: c.nameAr,
+    descriptionEn: c.descriptionEn ?? '',
+    descriptionAr: c.descriptionAr ?? '',
+    featured: c.featured,
+    coverImageUrl: c.coverImageUrl ?? ''
+  };
+}
+
+// ── Remas Studio — add-ons ───────────────────────────────────
+export async function getStudioAddOns() {
+  const rows = await prisma.addOn.findMany({orderBy: {sortOrder: 'asc'}});
+  return rows.map((a) => ({
+    id: a.id,
+    nameEn: a.nameEn,
+    nameAr: a.nameAr,
+    price: serializeDecimal(a.price),
+    currency: a.currency,
+    active: a.active,
+    imageUrl: a.imageUrl ?? ''
+  }));
+}
+
+export async function getStudioAddOn(id: string) {
+  const a = await prisma.addOn.findUnique({where: {id}});
+  if (!a) return null;
+  return {
+    id: a.id,
+    nameEn: a.nameEn,
+    nameAr: a.nameAr,
+    price: serializeDecimal(a.price),
+    active: a.active,
+    imageUrl: a.imageUrl ?? ''
+  };
+}
+
+// ── Remas Studio — garden ────────────────────────────────────
+export async function getStudioGardenPosts() {
+  const rows = await prisma.socialPost.findMany({
+    orderBy: [{sortOrder: 'asc'}, {createdAt: 'desc'}],
+    include: {bouquet: true}
+  });
+  return rows.map((p) => ({
+    id: p.id,
+    type: p.type,
+    platform: p.platform,
+    externalUrl: p.externalUrl ?? '',
+    imageUrl: coverOrNull(p.imageUrl),
+    captionEn: p.captionEn ?? '',
+    captionAr: p.captionAr ?? '',
+    featured: p.featured,
+    publishStatus: p.publishStatus,
+    bouquetNameEn: p.bouquet?.nameEn ?? null,
+    bouquetNameAr: p.bouquet?.nameAr ?? null
+  }));
+}
+
+export async function getStudioGardenPost(id: string) {
+  const p = await prisma.socialPost.findUnique({where: {id}});
+  if (!p) return null;
+  return {
+    id: p.id,
+    type: p.type,
+    externalUrl: p.externalUrl ?? '',
+    imageUrl: p.imageUrl ?? '',
+    captionEn: p.captionEn ?? '',
+    captionAr: p.captionAr ?? '',
+    bouquetId: p.bouquetId ?? '',
+    featured: p.featured,
+    publishStatus: p.publishStatus
+  };
+}
+
+export async function getBouquetOptions() {
+  const rows = await prisma.bouquet.findMany({orderBy: {sortOrder: 'asc'}});
+  return rows.map((b) => ({id: b.id, nameEn: b.nameEn, nameAr: b.nameAr}));
+}
+
 // ── Remas Studio — overview ──────────────────────────────────
 export async function getStudioStats() {
   const [newWishes, totalWishes, bouquets, collections, addOns, gardenPosts] = await Promise.all([

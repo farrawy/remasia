@@ -185,7 +185,121 @@
       "cancel": "Cancel",
       "errorSlug": "That slug is already used.",
       "errorGeneric": "Please check the form."
+    },
+    "common": {
+      "delete": "Delete",
+      "confirmDelete": "Yes, delete",
+      "cancel": "Cancel"
+    },
+    "collections": {
+      "title": "Collections",
+      "new": "New collection",
+      "empty": "No collections yet.",
+      "count": "{count} bouquets"
+    },
+    "collectionForm": {
+      "back": "Back to collections",
+      "newTitle": "New collection",
+      "editTitle": "Edit collection",
+      "nameAr": "Name (Arabic)",
+      "nameEn": "Name (English)",
+      "descriptionAr": "Description (Arabic)",
+      "descriptionEn": "Description (English)",
+      "slug": "Slug",
+      "slugHint": "Used in the link — lowercase letters and dashes",
+      "featured": "Feature on the storefront",
+      "cover": "Cover image",
+      "coverUrl": "Cover image path / URL",
+      "coverHint": "e.g. /images/collections/...webp",
+      "save": "Save collection",
+      "saving": "Saving…",
+      "errorSlug": "That slug is already used.",
+      "errorGeneric": "Please check the form."
+    },
+    "addOns": {
+      "title": "Add-ons",
+      "new": "New add-on",
+      "empty": "No add-ons yet.",
+      "inactive": "Hidden"
+    },
+    "addOnForm": {
+      "back": "Back to add-ons",
+      "newTitle": "New add-on",
+      "editTitle": "Edit add-on",
+      "nameAr": "Name (Arabic)",
+      "nameEn": "Name (English)",
+      "price": "Price (SAR)",
+      "image": "Image path / URL",
+      "imageHint": "Optional — e.g. /images/addons/...webp",
+      "active": "Available at checkout",
+      "save": "Save add-on",
+      "saving": "Saving…",
+      "errorGeneric": "Please check the form."
+    },
+    "garden": {
+      "title": "Remas Garden",
+      "new": "New post",
+      "empty": "No garden posts yet.",
+      "published": "Published",
+      "draft": "Draft"
+    },
+    "gardenForm": {
+      "back": "Back to the garden",
+      "newTitle": "New garden post",
+      "editTitle": "Edit garden post",
+      "type": "Type",
+      "url": "Post URL",
+      "urlHint": "Paste the Instagram or TikTok link",
+      "captionAr": "Caption (Arabic)",
+      "captionEn": "Caption (English)",
+      "bouquet": "Linked bouquet",
+      "noBouquet": "None",
+      "status": "Visibility",
+      "draft": "Draft",
+      "published": "Published",
+      "featured": "Featured",
+      "photo": "Photo",
+      "photoUrl": "Photo path / URL",
+      "photoHint": "e.g. /images/garden/...webp",
+      "save": "Save post",
+      "saving": "Saving…",
+      "errorGeneric": "Please check the form."
+    },
+    "settingsForm": {
+      "title": "Boutique Settings",
+      "subtitle": "The little details that run your boutique",
+      "whatsapp": "WhatsApp number",
+      "whatsappHint": "With country code, e.g. 9665XXXXXXXX — powers the order link",
+      "boutiqueName": "Boutique name",
+      "instagram": "Instagram URL",
+      "tiktok": "TikTok URL",
+      "bankAr": "Bank transfer note (Arabic)",
+      "bankEn": "Bank transfer note (English)",
+      "currency": "Currency",
+      "save": "Save settings",
+      "saving": "Saving…",
+      "saved": "Saved 🌸",
+      "errorGeneric": "Please check the form."
+    },
+    "secretForm": {
+      "title": "Secret Page",
+      "subtitle": "The hidden gift page at /for-remas",
+      "titleAr": "Title (Arabic)",
+      "titleEn": "Title (English)",
+      "messageAr": "Message (Arabic)",
+      "messageEn": "Message (English)",
+      "showSparkle": "Enable the hidden sparkles",
+      "save": "Save secret page",
+      "saving": "Saving…",
+      "saved": "Saved 🌸",
+      "preview": "Preview",
+      "errorGeneric": "Please check the form."
     }
+  },
+  "socialType": {
+    "ORIGINAL_PHOTO": "Original photo",
+    "INSTAGRAM_EMBED": "Instagram post",
+    "TIKTOK_EMBED": "TikTok video"
   },
   "bouquetStatus": {
     "DRAFT": "Draft",

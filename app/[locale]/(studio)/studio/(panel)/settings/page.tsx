@@ -1,13 +1,30 @@
-import {setRequestLocale} from 'next-intl/server';
+import {setRequestLocale, getTranslations} from 'next-intl/server';
+import {getSettings} from '@/lib/queries';
+import {SettingsForm} from '@/components/studio/SettingsForm';
 
-export default async function Page({params}: {params: Promise<{locale: string}>}) {
+export default async function StudioSettings({params}: {params: Promise<{locale: string}>}) {
   const {locale} = await params;
   setRequestLocale(locale);
+  const t = await getTranslations('studio.settingsForm');
+  const s = await getSettings();
+
+  const initial = {
+    whatsappNumber: s.whatsappNumber ?? '',
+    boutiqueName: s.boutiqueName ?? 'Remasia',
+    instagramUrl: s['instagram.url'] ?? '',
+    tiktokUrl: s['tiktok.url'] ?? '',
+    bankTextEn: s['bankTransfer.text.en'] ?? '',
+    bankTextAr: s['bankTransfer.text.ar'] ?? '',
+    currency: s.currency ?? 'SAR'
+  };
+
   return (
-    <main className="min-h-[60vh] p-8">
-      <p className="text-muted text-sm">/{locale} · Boutique Settings</p>
-      <h1 className="font-display text-deep-berry text-3xl mt-1">Boutique Settings</h1>
-      <p className="text-muted mt-2">Placeholder — foundation only. The real UI comes in a later phase.</p>
-    </main>
+    <div className="mx-auto max-w-3xl">
+      <h1 className="font-display text-3xl text-deep-berry">{t('title')}</h1>
+      <p className="mt-1 text-text-muted">{t('subtitle')}</p>
+      <div className="mt-6">
+        <SettingsForm initial={initial} />
+      </div>
+    </div>
   );
 }

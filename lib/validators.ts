@@ -90,11 +90,30 @@ export const finalizeImagesSchema = z.object({
 export const collectionSchema = z.object({
   nameEn: z.string().min(1),
   nameAr: z.string().min(1),
-  slug: z.string().min(1),
+  slug: z.string().min(1).regex(/^[a-z0-9-]+$/, 'Use lowercase letters, numbers and dashes'),
   descriptionEn: z.string().optional(),
   descriptionAr: z.string().optional(),
-  coverImage: z.string().optional(),
-  featured: z.boolean().default(false)
+  coverImageUrl: z.string().optional(),
+  featured: z.coerce.boolean().default(false)
+});
+
+export const addOnFormSchema = z.object({
+  nameEn: z.string().min(1),
+  nameAr: z.string().min(1),
+  price: z.coerce.number().positive(),
+  imageUrl: z.string().optional(),
+  active: z.coerce.boolean().default(true)
+});
+
+export const gardenFormSchema = z.object({
+  type: z.enum(['INSTAGRAM_EMBED', 'TIKTOK_EMBED', 'ORIGINAL_PHOTO']),
+  externalUrl: z.string().optional(),
+  imageUrl: z.string().optional(),
+  captionEn: z.string().optional(),
+  captionAr: z.string().optional(),
+  bouquetId: z.string().optional(),
+  featured: z.coerce.boolean().default(false),
+  publishStatus: z.enum(['DRAFT', 'PUBLISHED'])
 });
 
 export const addOnSchema = z.object({
@@ -129,6 +148,16 @@ export const siteSettingsSchema = z.object({
   accountName: z.string().optional(),
   deliveryNoteEn: z.string().optional(),
   deliveryNoteAr: z.string().optional(),
+  currency: z.string().default('SAR')
+});
+
+export const settingsFormSchema = z.object({
+  whatsappNumber: z.string().min(6),
+  boutiqueName: z.string().min(1),
+  instagramUrl: z.string().optional(),
+  tiktokUrl: z.string().optional(),
+  bankTextEn: z.string().optional(),
+  bankTextAr: z.string().optional(),
   currency: z.string().default('SAR')
 });
 
