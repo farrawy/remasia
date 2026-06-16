@@ -5,31 +5,47 @@ import {Link} from '@/i18n/navigation';
 import {SectionHeading} from '@/components/public/SectionHeading';
 import {BouquetCard} from '@/components/public/BouquetCard';
 import {pickLocale} from '@/lib/content-locale';
+import {cn} from '@/lib/utils';
 
-export default async function ShopPage({params}: {params: Promise<{locale: string}>}) {
+export default async function ShopPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{locale: string}>;
+  searchParams: Promise<{c?: string}>;
+}) {
   const {locale} = await params;
+  const {c} = await searchParams;
   setRequestLocale(locale);
   const loc = locale as Locale;
   const t = await getTranslations();
 
-  const [bouquets, collections] = await Promise.all([getBouquets(), getCollections()]);
+  const collections = await getCollections();
+  const active = c && collections.some((col) => col.slug === c) ? c : undefined;
+  const bouquets = await getBouquets(active ? {collectionSlug: active} : undefined);
   const featuredLabel = t('garden.featured');
+
+  const chip = 'rounded-pill px-4 py-1.5 text-sm transition-colors';
+  const chipActive = 'bg-accent-strong text-pearl';
+  const chipIdle = 'border border-line bg-surface text-text hover:bg-surface-alt';
 
   return (
     <div className="mx-auto max-w-6xl container-px py-14">
       <SectionHeading kicker={t('shop.kicker')} title={t('shop.title')} />
 
+      {/* Filter in place — stays on /shop (query param, soft navigation). */}
       <div className="mt-6 flex flex-wrap gap-2">
-        <span className="rounded-pill bg-accent-strong px-4 py-1.5 text-sm text-pearl">
+        <Link href="/shop" scroll={false} className={cn(chip, !active ? chipActive : chipIdle)}>
           {t('shop.allCollections')}
-        </span>
-        {collections.map((c) => (
+        </Link>
+        {collections.map((col) => (
           <Link
-            key={c.slug}
-            href={`/shop/${c.slug}`}
-            className="rounded-pill border border-line bg-surface px-4 py-1.5 text-sm text-text transition-colors hover:bg-surface-alt"
+            key={col.slug}
+            href={`/shop?c=${col.slug}`}
+            scroll={false}
+            className={cn(chip, active === col.slug ? chipActive : chipIdle)}
           >
-            {pickLocale(loc, c.nameEn, c.nameAr)}
+            {pickLocale(loc, col.nameEn, col.nameAr)}
           </Link>
         ))}
       </div>

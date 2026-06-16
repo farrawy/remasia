@@ -1,11 +1,13 @@
 import {getTranslations} from 'next-intl/server';
 import {Handbag} from '@phosphor-icons/react/dist/ssr';
 import {Link} from '@/i18n/navigation';
+import {cartCount} from '@/lib/cart';
 import {Logo} from './Logo';
 import {LanguageSwitcher} from './LanguageSwitcher';
 
 export async function Header() {
   const t = await getTranslations();
+  const count = await cartCount();
   const nav = [
     {href: '/', label: t('nav.home')},
     {href: '/shop', label: t('nav.shop')},
@@ -34,9 +36,14 @@ export async function Header() {
           <Link
             href="/cart"
             aria-label={t('nav.cart')}
-            className="grid size-10 place-items-center rounded-full bg-rose-100 text-deep-berry transition-colors hover:bg-rose-200"
+            className="relative grid size-10 place-items-center rounded-full bg-rose-100 text-deep-berry transition-colors hover:bg-rose-200"
           >
             <Handbag weight="duotone" size={20} />
+            {count > 0 ? (
+              <span className="absolute -end-1 -top-1 grid min-w-5 place-items-center rounded-full bg-accent-strong px-1 text-[10px] font-medium text-pearl">
+                {count}
+              </span>
+            ) : null}
           </Link>
         </div>
       </div>

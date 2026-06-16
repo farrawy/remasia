@@ -147,3 +147,93 @@ export async function getSettings(): Promise<Record<string, string>> {
   const rows = await prisma.siteSetting.findMany();
   return Object.fromEntries(rows.map((s) => [s.key, s.value]));
 }
+
+// ── Add-ons ──────────────────────────────────────────────────
+export type AddOnView = {id: string; nameEn: string; nameAr: string; price: number; currency: string};
+
+export async function getAddOns(): Promise<AddOnView[]> {
+  const rows = await prisma.addOn.findMany({where: {active: true}, orderBy: {sortOrder: 'asc'}});
+  return rows.map((a) => ({
+    id: a.id,
+    nameEn: a.nameEn,
+    nameAr: a.nameAr,
+    price: serializeDecimal(a.price),
+    currency: a.currency
+  }));
+}
+
+// ── Cart resolution (slugs in cookie -> live bouquet data) ───
+export type CartLine = {
+  slug: string;
+  nameEn: string;
+  nameAr: string;
+  price: number;
+  currency: string;
+  quantity: number;
+  lineTotal: number;
+};
+
+export async function resolveCart(
+  items: {slug: string; quantity: number}[]
+): Promise<{lines: CartLine[]; subtotal: number; currency: string}> {
+  if (!items.length) return {lines: [], subtotal: 0, currency: 'SAR'};
+  const rows = await prisma.bouquet.findMany({
+    where: {slug: {in: items.map((i) => i.slug)}, ...PUBLISHED}
+  });
+  const bySlug = new Map(rows.map((r) => [r.slug, r]));
+  const lines: CartLine[] = [];
+  for (const it of items) {
+    const b = bySlug.get(it.slug);
+    if (!b) continue; // silently drop unavailable
+    const price = serializeDecimal(b.price);
+    lines.push({
+      slug: b.slug,
+      nameEn: b.nameEn,
+      nameAr: b.nameAr,
+      price,
+      currency: b.currency,
+      quantity: it.quantity,
+      lineTotal: price * it.quantity
+    });
+  }
+  const subtotal = lines.reduce((s, l) => s + l.lineTotal, 0);
+  return {lines, subtotal, currency: lines[0]?.currency ?? 'SAR'};
+}
+
+// ── Order lookup (confirmation page) ─────────────────────────
+export async function getOrderByNumber(orderNumber: string) {
+  const o = await prisma.order.findUnique({
+    where: {orderNumber},
+    include: {items: true, addOns: true}
+  });
+  if (!o) return null;
+  return {
+    orderNumber: o.orderNumber,
+    status: o.status,
+    paymentMethod: o.paymentMethod,
+    recipientName: o.recipientName,
+    recipientPhone: o.recipientPhone,
+    senderName: o.senderName,
+    giftNote: o.giftNote,
+    deliveryDate: o.deliveryDate.toISOString(),
+    deliveryTimeSlot: o.deliveryTimeSlot,
+    area: o.area,
+    addressLine: o.addressLine,
+    addressNotes: o.addressNotes,
+    subtotal: serializeDecimal(o.subtotal),
+    total: serializeDecimal(o.total),
+    currency: o.currency,
+    items: o.items.map((i) => ({
+      nameEn: i.nameEn,
+      nameAr: i.nameAr,
+      unitPrice: serializeDecimal(i.unitPrice),
+      quantity: i.quantity
+    })),
+    addOns: o.addOns.map((a) => ({
+      nameEn: a.nameEn,
+      nameAr: a.nameAr,
+      unitPrice: serializeDecimal(a.unitPrice),
+      quantity: a.quantity
+    }))
+  };
+}

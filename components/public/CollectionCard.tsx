@@ -19,7 +19,7 @@ export function CollectionCard({
 
   return (
     <Link
-      href={`/shop/${collection.slug}`}
+      href={`/shop?c=${collection.slug}`}
       style={{animationDelay: `${index * 70}ms`}}
       className="bloom group relative block aspect-[3/4] overflow-hidden rounded-soft shadow-[var(--shadow-petal)] ring-1 ring-line/60"
     >

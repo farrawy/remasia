@@ -3,6 +3,7 @@ import {setRequestLocale, getTranslations} from 'next-intl/server';
 import {ArrowLeft, Handbag} from '@phosphor-icons/react/dist/ssr';
 import type {Locale} from '@/i18n/routing';
 import {getBouquetBySlug} from '@/lib/queries';
+import {addToCart} from '@/actions/cart';
 import {Link} from '@/i18n/navigation';
 import {Button} from '@/components/ui/Button';
 import {Price} from '@/components/ui/Price';
@@ -54,13 +55,14 @@ export default async function ProductPage({
           />
           {desc ? <p className="mt-5 leading-relaxed text-text">{desc}</p> : null}
 
-          <div className="mt-8">
-            {/* Cart is wired in a later phase. */}
+          <form action={addToCart} className="mt-8">
+            <input type="hidden" name="slug" value={b.slug} />
+            <input type="hidden" name="locale" value={loc} />
             <Button variant="magic" size="lg" className="w-full sm:w-auto">
               <Handbag weight="duotone" size={20} />
               {t('product.addToCart')}
             </Button>
-          </div>
+          </form>
         </div>
       </div>
     </div>

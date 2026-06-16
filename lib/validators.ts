@@ -45,6 +45,24 @@ export const createOrderSchema = z.object({
   locale: z.enum(['en', 'ar'])
 });
 
+// Flat shape the checkout FORM submits (cart items come from the cookie, not here).
+export const checkoutFormSchema = z.object({
+  addOnIds: z.array(z.string().min(1)).default([]),
+  giftNote: z.string().max(300).optional(),
+  recipientName: z.string().min(2).max(80),
+  recipientPhone: saudiPhone,
+  addressLine: z.string().min(4).max(200),
+  area: z.string().min(2).max(80).default('Abha'),
+  addressNotes: z.string().max(200).optional(),
+  senderName: z.string().max(80).optional(),
+  senderPhone: z.union([saudiPhone, z.literal('')]).optional(),
+  deliveryDate: z.string().min(1),
+  deliveryTimeSlot: z.enum(['MORNING', 'AFTERNOON', 'EVENING']),
+  paymentMethod: z.enum(['WHATSAPP', 'BANK_TRANSFER', 'CASH_ON_DELIVERY', 'ONLINE_PLACEHOLDER']),
+  locale: z.enum(['en', 'ar'])
+});
+export type CheckoutFormInput = z.infer<typeof checkoutFormSchema>;
+
 export const updateOrderStatusSchema = z.object({
   orderId: z.string().min(1),
   status: z.enum(['NEW', 'CONFIRMED', 'PREPARING', 'READY', 'DELIVERED', 'CANCELLED'])
