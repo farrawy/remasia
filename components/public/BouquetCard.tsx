@@ -1,3 +1,4 @@
+import {Sparkle} from '@phosphor-icons/react/dist/ssr';
 import {Link} from '@/i18n/navigation';
 import {BloomThumb} from '@/components/ui/Bloom';
 import {Price} from '@/components/ui/Price';
@@ -30,19 +31,25 @@ export function BouquetCard({
     >
       <article
         className={cn(
-          'card-pearl overflow-hidden transition-all duration-300 group-hover:-translate-y-1.5',
+          'card-pearl overflow-hidden transition-all duration-300',
+          'group-hover:-translate-y-1.5 group-hover:shadow-[0_20px_48px_-16px_rgba(248,91,153,0.5)]',
           bouquet.featured && 'group-hover:glow-fairy'
         )}
       >
-        <div className="relative">
-          <BloomThumb featured={bouquet.featured} className="aspect-[4/5] w-full" />
+        <div className="relative overflow-hidden">
+          <BloomThumb
+            seed={bouquet.slug}
+            featured={bouquet.featured}
+            className="aspect-[4/5] w-full transition-transform duration-700 group-hover:scale-105"
+          />
           {bouquet.featured ? (
-            <span className="ribbon absolute start-3 top-3 rounded-pill px-3 py-1 text-xs font-medium">
+            <span className="ribbon absolute start-3 top-3 inline-flex items-center gap-1 rounded-pill px-2.5 py-1 text-xs font-medium">
+              <Sparkle weight="fill" size={12} />
               {featuredLabel}
             </span>
           ) : null}
         </div>
-        <div className="space-y-1 p-4">
+        <div className="space-y-1.5 p-4">
           {collectionName ? (
             <p className="text-xs text-text-muted">{collectionName}</p>
           ) : null}

@@ -29,7 +29,11 @@ export function GardenRail({
               style={{animationDelay: `${i * 60}ms`}}
               className="bloom w-56 shrink-0 snap-start md:w-64"
             >
-              <BloomThumb featured={p.featured} className="aspect-square rounded-soft" />
+              <BloomThumb
+                seed={p.id}
+                featured={p.featured}
+                className="aspect-square rounded-soft shadow-[var(--shadow-petal)] ring-1 ring-line/60"
+              />
               {caption ? (
                 <figcaption className="mt-2 px-1 text-sm text-text-muted">{caption}</figcaption>
               ) : null}

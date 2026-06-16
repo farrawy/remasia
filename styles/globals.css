@@ -189,6 +189,29 @@ body {
   }
 }
 
+@layer components {
+  /* little pearl bead — used as a luxe accent */
+  .pearl {
+    background: radial-gradient(circle at 35% 28%, #ffffff 0%, var(--silver-pink) 72%);
+    box-shadow: inset 0 -1px 2px rgba(122, 36, 77, 0.18), 0 1px 3px rgba(248, 91, 153, 0.3);
+    border-radius: 999px;
+  }
+  .text-glow { text-shadow: 0 2px 28px rgba(248, 91, 153, 0.25); }
+
+  /* sweeping sheen for the primary CTA */
+  .btn-magic { position: relative; overflow: hidden; }
+  .btn-magic::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+    background-size: 250% 100%;
+    background-position: -150% 0;
+    transition: background-position 0.8s ease;
+  }
+  .btn-magic:hover::after { background-position: 250% 0; }
+}
+
 @keyframes bloomUp {
   from { opacity: 0; transform: translateY(16px) scale(0.98); }
   to   { opacity: 1; transform: none; }
@@ -201,12 +224,18 @@ body {
   0%, 100% { opacity: 0.25; transform: scale(0.8); }
   50%      { opacity: 1;    transform: scale(1.12); }
 }
+@keyframes drift {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  50%  { transform: translate(8px, -18px) rotate(10deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
 
 .bloom { animation: bloomUp 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 .float-slow { animation: floaty 6s ease-in-out infinite; }
 .twinkle { animation: twinkle 3.6s ease-in-out infinite; }
+.drift { animation: drift 9s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
-  .bloom, .float-slow, .twinkle { animation: none !important; }
+  .bloom, .float-slow, .twinkle, .drift { animation: none !important; }
   html { scroll-behavior: auto; }
 }

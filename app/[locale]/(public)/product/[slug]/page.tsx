@@ -37,7 +37,11 @@ export default async function ProductPage({
       </Link>
 
       <div className="mt-6 grid gap-8 md:grid-cols-2">
-        <BloomThumb featured={b.featured} className="aspect-[4/5] w-full rounded-soft" />
+        <BloomThumb
+          seed={b.slug}
+          featured={b.featured}
+          className="aspect-[4/5] w-full rounded-soft shadow-[var(--shadow-petal)] ring-1 ring-line/60"
+        />
 
         <div className="flex flex-col justify-center">
           {collectionName ? <p className="text-sm text-text-muted">{collectionName}</p> : null}
