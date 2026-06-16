@@ -169,18 +169,20 @@ async function seedSettings() {
 
 // ── 7) Secret page (single row) ───────────────────────────────
 async function seedSecretPage() {
+  const content = {
+    titleEn: 'Before this was a boutique, it was your dream.',
+    titleAr: 'قبل ما يكون بوتيك، كان حلمك.',
+    messageEn:
+      'Every flower here remembers a wish you once whispered. This little world only bloomed because you dreamed it — and now, petal by petal, it is yours. Forever. 🌸',
+    messageAr:
+      'كل وردة هنا تتذكّر أمنية همستِ بها يوماً. هذا العالم الصغير ما تفتّح إلا لأنكِ حلمتِ به — وها هو الآن، وردةً وردة، لكِ. إلى الأبد. 🌸',
+    enabled: true,
+    showSparkle: true
+  };
   await prisma.secretPage.upsert({
     where: {id: 'secret-page-singleton'},
-    update: {},
-    create: {
-      id: 'secret-page-singleton',
-      titleEn: 'Before this was a boutique, it was your dream.',
-      titleAr: 'قبل ما يكون بوتيك، كان حلمك.',
-      messageEn: 'Made with love, for Remas. 🌸',
-      messageAr: 'صُنع بحب، لريماس. 🌸',
-      enabled: true,
-      showSparkle: true
-    }
+    update: content,
+    create: {id: 'secret-page-singleton', ...content}
   });
 }
 

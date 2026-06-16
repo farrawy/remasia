@@ -109,7 +109,11 @@
   "garden": { "homepageTitle": "From Remas's Garden", "featured": "Featured" },
   "forRemas": {
     "title": "Before this was a boutique, it was your dream.",
+    "kicker": "A little secret, just for you",
     "openBoutique": "Open Your Boutique",
-    "enterStudio": "Enter Your Studio"
+    "enterStudio": "Enter Your Studio",
+    "secretHint": "psst… tap the heart",
+    "secret": "P.S. You are the most beautiful thing that ever bloomed here. 🌷",
+    "signature": "made with love · for Remas 🤍"
   }
 }

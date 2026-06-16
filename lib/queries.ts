@@ -200,6 +200,20 @@ export async function resolveCart(
   return {lines, subtotal, currency: lines[0]?.currency ?? 'SAR'};
 }
 
+// ── Secret page (the hidden /for-remas gift) ─────────────────
+export async function getSecretPage() {
+  const s = await prisma.secretPage.findFirst();
+  if (!s) return null;
+  return {
+    titleEn: s.titleEn,
+    titleAr: s.titleAr,
+    messageEn: s.messageEn,
+    messageAr: s.messageAr,
+    enabled: s.enabled,
+    showSparkle: s.showSparkle
+  };
+}
+
 // ── Order lookup (confirmation page) ─────────────────────────
 export async function getOrderByNumber(orderNumber: string) {
   const o = await prisma.order.findUnique({

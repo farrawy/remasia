@@ -1,13 +1,31 @@
+import type {Metadata} from 'next';
 import {setRequestLocale} from 'next-intl/server';
+import type {Locale} from '@/i18n/routing';
+import {getSecretPage} from '@/lib/queries';
+import {pickLocale} from '@/lib/content-locale';
+import {ForRemasExperience} from '@/components/for-remas/ForRemasExperience';
 
-export default async function Page({params}: {params: Promise<{locale: string}>}) {
+// Hidden gift page — unlisted and never indexed.
+export const metadata: Metadata = {
+  robots: {index: false, follow: false}
+};
+
+const FALLBACK = {
+  titleEn: 'Before this was a boutique, it was your dream.',
+  titleAr: 'قبل ما يكون بوتيك، كان حلمك.'
+};
+
+export default async function ForRemasPage({params}: {params: Promise<{locale: string}>}) {
   const {locale} = await params;
   setRequestLocale(locale);
-  return (
-    <main className="min-h-[60vh] p-8">
-      <p className="text-muted text-sm">/{locale} · For Remas</p>
-      <h1 className="font-display text-deep-berry text-3xl mt-1">For Remas</h1>
-      <p className="text-muted mt-2">Placeholder — foundation only. The real UI comes in a later phase.</p>
-    </main>
-  );
+  const loc = locale as Locale;
+
+  const secret = await getSecretPage();
+  const title = secret
+    ? pickLocale(loc, secret.titleEn, secret.titleAr)
+    : pickLocale(loc, FALLBACK.titleEn, FALLBACK.titleAr);
+  const message = secret ? pickLocale(loc, secret.messageEn, secret.messageAr) ?? '' : '';
+  const showSparkle = secret?.showSparkle ?? true;
+
+  return <ForRemasExperience title={title} message={message} showSparkle={showSparkle} locale={loc} />;
 }

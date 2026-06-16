@@ -230,12 +230,18 @@ body {
   100% { transform: translate(0, 0) rotate(0deg); }
 }
 
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 2px 26px rgba(255, 184, 213, 0.35); }
+  50% { text-shadow: 0 2px 46px rgba(255, 184, 213, 0.62), 0 0 18px rgba(205, 180, 255, 0.4); }
+}
+
 .bloom { animation: bloomUp 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 .float-slow { animation: floaty 6s ease-in-out infinite; }
 .twinkle { animation: twinkle 3.6s ease-in-out infinite; }
 .drift { animation: drift 9s ease-in-out infinite; }
+.glow-pulse { animation: glowPulse 4.5s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
-  .bloom, .float-slow, .twinkle, .drift { animation: none !important; }
+  .bloom, .float-slow, .twinkle, .drift, .glow-pulse { animation: none !important; }
   html { scroll-behavior: auto; }
 }
