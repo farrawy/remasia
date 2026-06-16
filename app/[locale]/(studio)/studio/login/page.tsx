@@ -1,13 +1,13 @@
 import {setRequestLocale} from 'next-intl/server';
+import {LoginForm} from '@/components/studio/LoginForm';
 
-export default async function Page({params}: {params: Promise<{locale: string}>}) {
+export default async function StudioLoginPage({params}: {params: Promise<{locale: string}>}) {
   const {locale} = await params;
   setRequestLocale(locale);
+
   return (
-    <main className="min-h-[60vh] p-8">
-      <p className="text-muted text-sm">/{locale} · Studio Login</p>
-      <h1 className="font-display text-deep-berry text-3xl mt-1">Studio Login</h1>
-      <p className="text-muted mt-2">Placeholder — foundation only. The real UI comes in a later phase.</p>
+    <main className="bg-magic-wash grid min-h-dvh place-items-center p-6">
+      <LoginForm />
     </main>
   );
 }

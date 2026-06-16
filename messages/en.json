@@ -115,5 +115,45 @@
     "secretHint": "psst… tap the heart",
     "secret": "P.S. You are the most beautiful flower in this place. 🌷",
     "signature": "made with love · for Remas 🤍"
+  },
+  "studio": {
+    "shellTitle": "Remas Studio",
+    "logout": "Sign out",
+    "login": {
+      "title": "Remas Studio",
+      "subtitle": "Welcome back, Remas 🌸",
+      "password": "Password",
+      "submit": "Enter your studio",
+      "loading": "Opening…",
+      "error": "Hmm, that password isn't right."
+    },
+    "dashboard": {
+      "title": "Today's Magic",
+      "hello": "Welcome back, Remas 🌸",
+      "newWishes": "New wishes",
+      "totalWishes": "All wishes",
+      "bouquets": "Bouquets",
+      "collections": "Collections",
+      "addOns": "Add-ons",
+      "gardenPosts": "Garden posts",
+      "recent": "Latest wishes",
+      "viewAll": "View all",
+      "empty": "No wishes yet — they'll bloom here."
+    },
+    "orders": {
+      "title": "Wishes",
+      "subtitle": "Every order is a little wish 🌷",
+      "recipient": "Recipient",
+      "total": "Total",
+      "when": "Delivery",
+      "method": "Method",
+      "placed": "From",
+      "address": "Address",
+      "empty": "No wishes yet.",
+      "back": "Back to wishes",
+      "updateStatus": "Update status",
+      "deliverTo": "Deliver to",
+      "giftNote": "Gift note"
+    }
   }
 }

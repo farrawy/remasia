@@ -200,6 +200,77 @@ export async function resolveCart(
   return {lines, subtotal, currency: lines[0]?.currency ?? 'SAR'};
 }
 
+// ── Remas Studio ─────────────────────────────────────────────
+export async function getStudioStats() {
+  const [newWishes, totalWishes, bouquets, collections, addOns, gardenPosts] = await Promise.all([
+    prisma.order.count({where: {status: 'NEW'}}),
+    prisma.order.count(),
+    prisma.bouquet.count(),
+    prisma.collection.count(),
+    prisma.addOn.count(),
+    prisma.socialPost.count()
+  ]);
+  return {newWishes, totalWishes, bouquets, collections, addOns, gardenPosts};
+}
+
+export async function getStudioOrders(limit?: number) {
+  const rows = await prisma.order.findMany({
+    orderBy: {createdAt: 'desc'},
+    take: limit,
+    include: {_count: {select: {items: true, addOns: true}}}
+  });
+  return rows.map((o) => ({
+    id: o.id,
+    orderNumber: o.orderNumber,
+    status: o.status,
+    paymentMethod: o.paymentMethod,
+    recipientName: o.recipientName,
+    total: serializeDecimal(o.total),
+    currency: o.currency,
+    createdAt: o.createdAt.toISOString(),
+    deliveryDate: o.deliveryDate.toISOString(),
+    itemCount: o._count.items,
+    addOnCount: o._count.addOns
+  }));
+}
+
+export async function getStudioOrder(id: string) {
+  const o = await prisma.order.findUnique({where: {id}, include: {items: true, addOns: true}});
+  if (!o) return null;
+  return {
+    id: o.id,
+    orderNumber: o.orderNumber,
+    status: o.status,
+    paymentMethod: o.paymentMethod,
+    senderName: o.senderName,
+    senderPhone: o.senderPhone,
+    recipientName: o.recipientName,
+    recipientPhone: o.recipientPhone,
+    giftNote: o.giftNote,
+    deliveryDate: o.deliveryDate.toISOString(),
+    deliveryTimeSlot: o.deliveryTimeSlot,
+    area: o.area,
+    addressLine: o.addressLine,
+    addressNotes: o.addressNotes,
+    subtotal: serializeDecimal(o.subtotal),
+    total: serializeDecimal(o.total),
+    currency: o.currency,
+    createdAt: o.createdAt.toISOString(),
+    items: o.items.map((i) => ({
+      nameEn: i.nameEn,
+      nameAr: i.nameAr,
+      unitPrice: serializeDecimal(i.unitPrice),
+      quantity: i.quantity
+    })),
+    addOns: o.addOns.map((a) => ({
+      nameEn: a.nameEn,
+      nameAr: a.nameAr,
+      unitPrice: serializeDecimal(a.unitPrice),
+      quantity: a.quantity
+    }))
+  };
+}
+
 // ── Secret page (the hidden /for-remas gift) ─────────────────
 export async function getSecretPage() {
   const s = await prisma.secretPage.findFirst();
