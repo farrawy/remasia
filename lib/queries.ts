@@ -1,5 +1,16 @@
+import {existsSync} from 'node:fs';
+import {join} from 'node:path';
 import prisma from '@/lib/prisma';
 import {serializeDecimal} from '@/lib/utils';
+
+// A local /images/... path only resolves if the file exists yet (seed paths are
+// placeholders); external (uploaded) URLs are assumed valid. Avoids 404s for
+// cover images that haven't been added.
+function coverOrNull(url: string | null | undefined): string | null {
+  if (!url) return null;
+  if (/^https?:\/\//.test(url)) return url;
+  return existsSync(join(process.cwd(), 'public', url.replace(/^\//, ''))) ? url : null;
+}
 
 // ── View models ──────────────────────────────────────────────
 // Plain, serializable shapes (Decimal -> number) for Server AND Client
@@ -200,7 +211,54 @@ export async function resolveCart(
   return {lines, subtotal, currency: lines[0]?.currency ?? 'SAR'};
 }
 
-// ── Remas Studio ─────────────────────────────────────────────
+// ── Remas Studio — bouquets ──────────────────────────────────
+export async function getStudioBouquets() {
+  const rows = await prisma.bouquet.findMany({
+    orderBy: [{featured: 'desc'}, {sortOrder: 'asc'}, {createdAt: 'desc'}],
+    include: {collection: true, images: {where: {isCover: true}, take: 1}}
+  });
+  return rows.map((b) => ({
+    id: b.id,
+    slug: b.slug,
+    nameEn: b.nameEn,
+    nameAr: b.nameAr,
+    price: serializeDecimal(b.price),
+    currency: b.currency,
+    status: b.status,
+    featured: b.featured,
+    coverUrl: coverOrNull(b.images[0]?.url),
+    collectionEn: b.collection?.nameEn ?? null,
+    collectionAr: b.collection?.nameAr ?? null
+  }));
+}
+
+export async function getStudioBouquet(id: string) {
+  const b = await prisma.bouquet.findUnique({
+    where: {id},
+    include: {images: {where: {isCover: true}, take: 1}}
+  });
+  if (!b) return null;
+  return {
+    id: b.id,
+    slug: b.slug,
+    nameEn: b.nameEn,
+    nameAr: b.nameAr,
+    descriptionEn: b.descriptionEn ?? '',
+    descriptionAr: b.descriptionAr ?? '',
+    price: serializeDecimal(b.price),
+    status: b.status,
+    featured: b.featured,
+    collectionId: b.collectionId ?? '',
+    coverImageUrl: b.images[0]?.url ?? ''
+  };
+}
+
+export async function getCollectionOptions() {
+  const rows = await prisma.collection.findMany({orderBy: {sortOrder: 'asc'}});
+  return rows.map((c) => ({id: c.id, nameEn: c.nameEn, nameAr: c.nameAr}));
+}
+
+// ── Remas Studio — overview ──────────────────────────────────
 export async function getStudioStats() {
   const [newWishes, totalWishes, bouquets, collections, addOns, gardenPosts] = await Promise.all([
     prisma.order.count({where: {status: 'NEW'}}),

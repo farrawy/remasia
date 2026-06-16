@@ -25,6 +25,14 @@ export const BOUQUET_STATUSES: BouquetStatus[] = [
   'SOLD_OUT'
 ];
 
+/** Soft on-brand tone per bouquet status. */
+export const BOUQUET_STATUS_TONE: Record<BouquetStatus, string> = {
+  DRAFT: 'bg-silver-pink text-muted',
+  PUBLISHED: 'bg-rose-200 text-deep-berry',
+  ARCHIVED: 'bg-cream text-muted',
+  SOLD_OUT: 'bg-blush-mist text-deep-berry'
+};
+
 /** Soft on-brand tone per status (token class names, no greens/golds). */
 export const ORDER_STATUS_TONE: Record<OrderStatus, string> = {
   NEW: 'bg-rose-100 text-deep-berry',

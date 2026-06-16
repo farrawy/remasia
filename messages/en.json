@@ -154,6 +154,43 @@
       "updateStatus": "Update status",
       "deliverTo": "Deliver to",
       "giftNote": "Gift note"
+    },
+    "bouquets": {
+      "title": "Bouquets",
+      "new": "New bouquet",
+      "empty": "No bouquets yet — let's create your first."
+    },
+    "bouquetForm": {
+      "back": "Back to bouquets",
+      "newTitle": "New bouquet",
+      "editTitle": "Edit bouquet",
+      "nameAr": "Name (Arabic)",
+      "nameEn": "Name (English)",
+      "descriptionAr": "Description (Arabic)",
+      "descriptionEn": "Description (English)",
+      "slug": "Slug",
+      "slugHint": "Used in the link — lowercase letters and dashes",
+      "price": "Price (SAR)",
+      "collection": "Collection",
+      "noCollection": "No collection",
+      "status": "Status",
+      "featured": "Feature on the storefront",
+      "cover": "Cover image",
+      "coverUrl": "Cover image path / URL",
+      "coverHint": "e.g. /images/bouquets/...webp",
+      "save": "Save bouquet",
+      "saving": "Saving…",
+      "delete": "Delete",
+      "confirmDelete": "Yes, delete",
+      "cancel": "Cancel",
+      "errorSlug": "That slug is already used.",
+      "errorGeneric": "Please check the form."
     }
+  },
+  "bouquetStatus": {
+    "DRAFT": "Draft",
+    "PUBLISHED": "Published",
+    "ARCHIVED": "Archived",
+    "SOLD_OUT": "Sold out"
   }
 }

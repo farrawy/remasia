@@ -154,6 +154,43 @@
       "updateStatus": "تحديث الحالة",
       "deliverTo": "التوصيل إلى",
       "giftNote": "بطاقة الإهداء"
+    },
+    "bouquets": {
+      "title": "الباقات",
+      "new": "باقة جديدة",
+      "empty": "لا توجد باقات بعد — لننشئ أول باقة."
+    },
+    "bouquetForm": {
+      "back": "العودة إلى الباقات",
+      "newTitle": "باقة جديدة",
+      "editTitle": "تعديل الباقة",
+      "nameAr": "الاسم (عربي)",
+      "nameEn": "الاسم (إنجليزي)",
+      "descriptionAr": "الوصف (عربي)",
+      "descriptionEn": "الوصف (إنجليزي)",
+      "slug": "المعرّف",
+      "slugHint": "يُستخدم في الرابط — أحرف إنجليزية صغيرة وشرطات",
+      "price": "السعر (ر.س)",
+      "collection": "المجموعة",
+      "noCollection": "بدون مجموعة",
+      "status": "الحالة",
+      "featured": "مميزة في المتجر",
+      "cover": "صورة الغلاف",
+      "coverUrl": "مسار/رابط صورة الغلاف",
+      "coverHint": "مثال: /images/bouquets/...webp",
+      "save": "حفظ الباقة",
+      "saving": "جارٍ الحفظ…",
+      "delete": "حذف",
+      "confirmDelete": "نعم، احذفي",
+      "cancel": "إلغاء",
+      "errorSlug": "هذا المعرّف مستخدم بالفعل.",
+      "errorGeneric": "يرجى مراجعة النموذج."
     }
+  },
+  "bouquetStatus": {
+    "DRAFT": "مسودة",
+    "PUBLISHED": "منشورة",
+    "ARCHIVED": "مؤرشفة",
+    "SOLD_OUT": "نفدت"
   }
 }

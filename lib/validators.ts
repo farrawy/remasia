@@ -72,13 +72,14 @@ export const updateOrderStatusSchema = z.object({
 export const bouquetSchema = z.object({
   nameEn: z.string().min(1),
   nameAr: z.string().min(1),
-  slug: z.string().min(1),
+  slug: z.string().min(1).regex(/^[a-z0-9-]+$/, 'Use lowercase letters, numbers and dashes'),
   descriptionEn: z.string().optional(),
   descriptionAr: z.string().optional(),
-  price: z.number().positive(),
-  collectionId: z.string().min(1).optional(),
+  price: z.coerce.number().positive(),
+  collectionId: z.string().optional(),
   status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED', 'SOLD_OUT']),
-  featured: z.boolean().default(false)
+  featured: z.coerce.boolean().default(false),
+  coverImageUrl: z.string().optional()
 });
 
 export const finalizeImagesSchema = z.object({
