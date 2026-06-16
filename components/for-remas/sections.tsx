@@ -1,6 +1,6 @@
 'use client';
 
-import {useState, type ReactNode} from 'react';
+import {useMemo, useState, type ReactNode} from 'react';
 import {motion, AnimatePresence, useReducedMotion} from 'framer-motion';
 import {Sparkle, Heart, Flower, Images} from '@phosphor-icons/react/dist/ssr';
 import {Link} from '@/i18n/navigation';
@@ -46,25 +46,40 @@ function TraitCard({label, copy}: {label: string; copy: string}) {
     <button
       type="button"
       onClick={() => setOpen((o) => !o)}
+      aria-label={label}
       className={cn(
         GLASS,
-        'group relative flex min-h-32 w-full flex-col items-center justify-center overflow-hidden p-5 text-center transition-all duration-300',
-        'hover:border-magic-glow/50 hover:bg-white/10 hover:shadow-[0_0_30px_-8px_var(--magic-glow)]',
-        open && 'border-magic-glow/50 bg-white/10 shadow-[0_0_30px_-8px_var(--magic-glow)]'
+        'group relative h-28 w-full overflow-hidden p-3 transition-all duration-500 ease-out',
+        'hover:-translate-y-1 hover:border-magic-glow/60 hover:bg-white/10 hover:shadow-[0_0_38px_-8px_var(--magic-glow)]',
+        open && '-translate-y-1 border-magic-glow/60 bg-white/10 shadow-[0_0_38px_-8px_var(--magic-glow)]'
       )}
     >
+      {/* soft magical glow on reveal */}
       <span
         className={cn(
-          'font-display text-xl text-pearl transition-transform duration-300 group-hover:-translate-y-4',
-          open && '-translate-y-4'
+          'pointer-events-none absolute inset-0 transition-opacity duration-500',
+          open ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+        )}
+        style={{background: 'radial-gradient(circle at 50% 45%, rgba(255,184,213,0.20), transparent 70%)'}}
+      />
+      {/* title — shown when idle, hidden on hover/open */}
+      <span
+        className={cn(
+          'absolute inset-0 grid place-items-center font-display text-xl text-pearl transition-all duration-500 ease-out',
+          open
+            ? 'scale-90 opacity-0'
+            : 'scale-100 opacity-100 group-hover:scale-90 group-hover:opacity-0'
         )}
       >
         {label}
       </span>
+      {/* description — hidden when idle, revealed on hover/open */}
       <span
         className={cn(
-          'absolute inset-x-3 bottom-4 text-xs leading-relaxed text-pearl/75 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100',
-          open ? 'translate-y-0 opacity-100' : 'translate-y-1 opacity-0'
+          'absolute inset-0 grid place-items-center px-4 text-xs leading-relaxed text-pearl transition-all duration-500 ease-out',
+          open
+            ? 'scale-100 opacity-100'
+            : 'scale-105 opacity-0 group-hover:scale-100 group-hover:opacity-100'
         )}
       >
         {copy}
@@ -91,15 +106,74 @@ function World({c}: {c: LetterContent['world']}) {
   );
 }
 
+function Petal({className}: {className?: string}) {
+  return (
+    <svg viewBox="-12 -28 24 32" className={className} fill="currentColor" aria-hidden>
+      <path d="M0 4 C 9 -8 9 -22 0 -28 C -9 -22 -9 -8 0 4 Z" />
+    </svg>
+  );
+}
+
+// Soft, on-brand confetti — petals/hearts/sparkles burst up then drift down.
+function Confetti() {
+  const pieces = useMemo(
+    () =>
+      Array.from({length: 30}, (_, i) => {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 70 + Math.random() * 150;
+        const endX = Math.cos(angle) * dist;
+        const burstUp = 50 + Math.random() * 110;
+        const fallDown = 200 + Math.random() * 190;
+        const rot = (Math.random() * 2 - 1) * 480;
+        return {
+          id: i,
+          x: [0, endX * 0.55, endX],
+          y: [0, -burstUp, fallDown],
+          rotate: [0, rot * 0.4, rot],
+          scale: 0.55 + Math.random() * 0.8,
+          duration: 1.8 + Math.random() * 1.1,
+          delay: Math.random() * 0.18,
+          kind: i % 3,
+          color: ['#ff7fb0', '#f85b99', '#ffabc9', '#cdb4ff', '#ffb8d5', '#c9184a'][i % 6]
+        };
+      }),
+    []
+  );
+  return (
+    <div className="pointer-events-none absolute inset-0 z-30 overflow-visible" aria-hidden>
+      {pieces.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute"
+          style={{left: '50%', top: '42%', color: p.color}}
+          initial={{x: 0, y: 0, opacity: 1, rotate: 0, scale: p.scale}}
+          animate={{x: p.x, y: p.y, rotate: p.rotate, opacity: [1, 1, 0]}}
+          transition={{duration: p.duration, delay: p.delay, ease: 'easeOut', times: [0, 0.35, 1]}}
+        >
+          {p.kind === 0 ? (
+            <Petal className="size-3.5" />
+          ) : p.kind === 1 ? (
+            <Heart weight="fill" className="size-3" />
+          ) : (
+            <Sparkle weight="fill" className="size-3" />
+          )}
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 // ── The "open the first bouquet" gift reveal ─────────────────
 function BouquetReveal({c}: {c: LetterContent['bouquet']}) {
   const [open, setOpen] = useState(false);
 
   return (
     <Reveal className="flex flex-col items-center">
-      <div className={cn(GLASS, 'w-full max-w-md overflow-hidden p-2')}>
-        <AnimatePresence mode="wait" initial={false}>
-          {open ? (
+      <div className="relative w-full max-w-md">
+        {open ? <Confetti /> : null}
+        <div className={cn(GLASS, 'w-full overflow-hidden p-2')}>
+          <AnimatePresence mode="wait" initial={false}>
+            {open ? (
             <motion.div
               key="open"
               initial={{opacity: 0, scale: 0.96}}
@@ -143,7 +217,8 @@ function BouquetReveal({c}: {c: LetterContent['bouquet']}) {
               <p className="mt-1 text-xs text-pearl/55">{c.hint}</p>
             </motion.button>
           )}
-        </AnimatePresence>
+          </AnimatePresence>
+        </div>
       </div>
     </Reveal>
   );
@@ -151,7 +226,7 @@ function BouquetReveal({c}: {c: LetterContent['bouquet']}) {
 
 function StudioCard({label, copy, icon}: {label: string; copy: string; icon: ReactNode}) {
   return (
-    <div className={cn(GLASS, 'flex flex-col items-center gap-2 p-6 text-center transition-colors hover:bg-white/10')}>
+    <div className={cn(GLASS, 'flex h-full flex-col items-center justify-center gap-2 p-6 text-center transition-colors hover:bg-white/10')}>
       <span className="grid size-12 place-items-center rounded-2xl bg-white/10 text-magic-glow">{icon}</span>
       <h3 className="font-display text-xl text-pearl">{label}</h3>
       <p className="text-sm text-pearl/70">{copy}</p>
@@ -225,8 +300,8 @@ export function LetterSections({content}: {content: LetterContent}) {
         </Reveal>
         <div className="mt-9 grid grid-cols-2 gap-4 md:grid-cols-4">
           {content.flowers.items.map((f, i) => (
-            <Reveal key={f.seed} delay={i * 0.08}>
-              <div className={cn(GLASS, 'h-full overflow-hidden p-3 text-center')}>
+            <Reveal key={f.seed} delay={i * 0.08} className="h-full">
+              <div className={cn(GLASS, 'flex h-full flex-col overflow-hidden p-3 text-center')}>
                 <BloomThumb seed={f.seed} className="aspect-square w-full rounded-2xl" />
                 <h3 className="mt-3 font-display text-lg text-pearl">{f.name}</h3>
                 <p className="mt-1 text-xs text-pearl/70 leading-relaxed">{f.copy}</p>
@@ -264,7 +339,7 @@ export function LetterSections({content}: {content: LetterContent}) {
         </Reveal>
         <div className="mt-9 grid gap-4 sm:grid-cols-3">
           {content.studio.cards.map((card, i) => (
-            <Reveal key={card.key} delay={i * 0.1}>
+            <Reveal key={card.key} delay={i * 0.1} className="h-full">
               <StudioCard label={card.label} copy={card.copy} icon={studioIcons[card.key]} />
             </Reveal>
           ))}
