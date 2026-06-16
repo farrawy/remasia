@@ -25,23 +25,23 @@ export function getLetterContent(locale: Locale) {
       title: ar ? 'هذا العالم يشبهك' : 'This world is made from you',
       traits: ar
         ? [
-            {label: 'ناعمة'},
-            {label: 'كيوت'},
+            {label: 'ناعمة', copy: 'لأن كل شي فيك ناعم، حتى طريقة كلامك.'},
+            {label: 'كيوت', copy: 'لأنك كيوت بطريقة ما تتقلّد.'},
             {label: 'فنانة', copy: 'لأنك تشوفين الجمال في التفاصيل الصغيرة.'},
             {label: 'ديفا', copy: 'لأن الورد يحتاج شوية دراما.'},
-            {label: 'ورديّة'},
-            {label: 'حساسة'},
-            {label: 'درامية شوي'},
+            {label: 'ورديّة', copy: 'لأن الوردي مو لون… الوردي مزاجك.'},
+            {label: 'حساسة', copy: 'لأن قلبك يحس بأشياء غيرك ما ينتبه لها.'},
+            {label: 'درامية شوي', copy: 'بس بالقدر اللي يخليك ممتعة.'},
             {label: 'أميرة', copy: 'لأن هذا المكان معمول لكِ.'}
           ]
         : [
-            {label: 'Soft'},
-            {label: 'Cute'},
+            {label: 'Soft', copy: 'Because everything about you is gentle — even the way you speak.'},
+            {label: 'Cute', copy: "Because you're cute in a way no one can copy."},
             {label: 'Artist', copy: 'Because you see the beauty in the smallest details.'},
             {label: 'Diva', copy: 'Because flowers need a little drama.'},
-            {label: 'Pink'},
-            {label: 'Tender'},
-            {label: 'A little dramatic'},
+            {label: 'Pink', copy: "Because pink isn't a color… pink is your mood."},
+            {label: 'Tender', copy: 'Because your heart feels what others never notice.'},
+            {label: 'A little dramatic', copy: 'But just enough to make you delightful.'},
             {label: 'Princess', copy: 'Because this place was made for you.'}
           ]
     },

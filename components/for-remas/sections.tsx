@@ -39,52 +39,55 @@ function SectionTitle({children}: {children: ReactNode}) {
   return <h2 className="font-display text-3xl leading-tight text-pearl md:text-4xl">{children}</h2>;
 }
 
-// ── A trait chip + a shared copy line below the grid ─────────
-function World({c}: {c: LetterContent['world']}) {
-  const [active, setActive] = useState<number | null>(null);
-  const activeCopy = active !== null ? c.traits[active]?.copy : undefined;
-
+// ── A trait card that reveals its reason on hover (or tap) ───
+function TraitCard({label, copy}: {label: string; copy: string}) {
+  const [open, setOpen] = useState(false);
   return (
-    <Reveal className="flex flex-col items-center">
-      <Kicker />
-      <SectionTitle>{c.title}</SectionTitle>
-      <div className="mt-7 flex max-w-xl flex-wrap items-center justify-center gap-2.5">
+    <button
+      type="button"
+      onClick={() => setOpen((o) => !o)}
+      className={cn(
+        GLASS,
+        'group relative flex min-h-32 w-full flex-col items-center justify-center overflow-hidden p-5 text-center transition-all duration-300',
+        'hover:border-magic-glow/50 hover:bg-white/10 hover:shadow-[0_0_30px_-8px_var(--magic-glow)]',
+        open && 'border-magic-glow/50 bg-white/10 shadow-[0_0_30px_-8px_var(--magic-glow)]'
+      )}
+    >
+      <span
+        className={cn(
+          'font-display text-xl text-pearl transition-transform duration-300 group-hover:-translate-y-4',
+          open && '-translate-y-4'
+        )}
+      >
+        {label}
+      </span>
+      <span
+        className={cn(
+          'absolute inset-x-3 bottom-4 text-xs leading-relaxed text-pearl/75 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100',
+          open ? 'translate-y-0 opacity-100' : 'translate-y-1 opacity-0'
+        )}
+      >
+        {copy}
+      </span>
+    </button>
+  );
+}
+
+function World({c}: {c: LetterContent['world']}) {
+  return (
+    <>
+      <Reveal className="flex flex-col items-center">
+        <Kicker />
+        <SectionTitle>{c.title}</SectionTitle>
+      </Reveal>
+      <div className="mt-9 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
         {c.traits.map((tr, i) => (
-          <button
-            key={i}
-            type="button"
-            onMouseEnter={() => setActive(i)}
-            onMouseLeave={() => setActive((a) => (a === i ? null : a))}
-            onFocus={() => setActive(i)}
-            onClick={() => setActive((a) => (a === i ? null : i))}
-            className={cn(
-              'rounded-full border px-4 py-2 text-sm transition-all duration-300',
-              active === i
-                ? 'border-magic-glow/60 bg-white/15 text-pearl shadow-[0_0_22px_-6px_var(--magic-glow)]'
-                : 'border-white/15 bg-white/[0.06] text-pearl/85 hover:bg-white/10'
-            )}
-          >
-            {tr.label}
-          </button>
+          <Reveal key={i} delay={i * 0.06}>
+            <TraitCard label={tr.label} copy={tr.copy ?? ''} />
+          </Reveal>
         ))}
       </div>
-      <div className="mt-4 flex min-h-6 items-center justify-center">
-        <AnimatePresence mode="wait">
-          {activeCopy ? (
-            <motion.p
-              key={active}
-              initial={{opacity: 0, y: 6}}
-              animate={{opacity: 1, y: 0}}
-              exit={{opacity: 0, y: -6}}
-              transition={{duration: 0.4}}
-              className="text-sm text-pearl/75"
-            >
-              {activeCopy}
-            </motion.p>
-          ) : null}
-        </AnimatePresence>
-      </div>
-    </Reveal>
+    </>
   );
 }
 
@@ -210,7 +213,7 @@ export function LetterSections({content}: {content: LetterContent}) {
       </section>
 
       {/* 2 — This world was made from you */}
-      <section className="mx-auto max-w-2xl container-px py-16 text-center md:py-20">
+      <section className="mx-auto max-w-3xl container-px py-16 text-center md:py-20">
         <World c={content.world} />
       </section>
 
