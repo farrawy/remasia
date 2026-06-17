@@ -41,3 +41,5 @@ yarn-error.log*
 # local verification artifacts (Playwright screenshots)
 /.playwright-mcp
 /*.png
+.vercel
+.env*

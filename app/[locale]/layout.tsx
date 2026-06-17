@@ -3,7 +3,7 @@ import {notFound} from 'next/navigation';
 import {hasLocale, NextIntlClientProvider} from 'next-intl';
 import {getMessages, setRequestLocale} from 'next-intl/server';
 import {routing} from '@/i18n/routing';
-import {tajawal, dancingDisplay, lalezarDisplay} from '@/lib/fonts';
+import {tajawal, dancingDisplay, lalezarDisplay, arefScript} from '@/lib/fonts';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
@@ -35,7 +35,7 @@ export default async function LocaleLayout({children, params}: Props) {
     <html
       lang={locale}
       dir={dir}
-      className={`${tajawal.variable} ${dancingDisplay.variable} ${lalezarDisplay.variable}`}
+      className={`${tajawal.variable} ${dancingDisplay.variable} ${lalezarDisplay.variable} ${arefScript.variable}`}
     >
       <body className="font-body antialiased">
         <NextIntlClientProvider

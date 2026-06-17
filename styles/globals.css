@@ -36,8 +36,9 @@
   --danger:        var(--romantic-red);/* cancel / delete in Studio */
   --line:          var(--silver-pink); /* hairline borders, dividers */
 
-  /* ── Font tokens (the display var is swapped per-direction below) ── */
+  /* ── Font tokens (the display + script vars are swapped per-direction below) ── */
   --font-display: var(--font-display-latin);
+  --font-script:  var(--font-display-latin); /* Latin handwritten = Dancing_Script */
 
   /* ── Radii (RAW values — distinct names to avoid a circular @theme self-map) ── */
   --radius-soft-raw: 1.25rem;
@@ -48,7 +49,10 @@
   --shadow-glow:  0 0 0 4px rgba(255, 184, 213, 0.45);
 }
 
-html[dir='rtl'] { --font-display: var(--font-display-arabic); }
+html[dir='rtl'] {
+  --font-display: var(--font-display-arabic);
+  --font-script:  var(--font-script-arabic); /* Arabic calligraphic love-letter script */
+}
 
 @theme inline {
   /* Rose scale -> bg-rose-50 ... bg-rose-500, text-rose-*, border-rose-* */
@@ -92,6 +96,7 @@ html[dir='rtl'] { --font-display: var(--font-display-arabic); }
      (--font-display) — a different cascade source, NOT a circular self-map. */
   --font-body:    var(--font-body);
   --font-display: var(--font-display);
+  --font-script:  var(--font-script);
 
   /* Radii -> rounded-soft, rounded-pill (point at the distinct *-raw vars) */
   --radius-soft: var(--radius-soft-raw);

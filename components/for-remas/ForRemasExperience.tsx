@@ -1,66 +1,76 @@
 'use client';
 
-import {useRef, useState, type MouseEvent} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {motion, AnimatePresence, useReducedMotion} from 'framer-motion';
-import {Sparkle, Heart, Butterfly} from '@phosphor-icons/react/dist/ssr';
-import {useTranslations} from 'next-intl';
+import {Sparkle} from '@phosphor-icons/react/dist/ssr';
 import {Link} from '@/i18n/navigation';
-import {Bloom} from '@/components/ui/Bloom';
 import {cn} from '@/lib/utils';
 import type {Locale} from '@/i18n/routing';
-import {getLetterContent} from './content';
-import {LetterSections} from './sections';
+import {getForRemasContent} from './content';
+import {Peony, PETAL_D} from './florals';
+import {
+  ToastProvider,
+  FloatingHearts,
+  DoNotClick,
+  Passcode,
+  HiddenTimestamp,
+  ComplimentFlower,
+  TypedNameReveal,
+  FooterSecret
+} from './secrets';
+import {
+  FoldedLetter,
+  KeepsakeNotes,
+  PressedFlowers,
+  WrappedGift,
+  OrderReceipt,
+  TwentyWishes,
+  Overwhelm,
+  MoodLetters,
+  FinalDoor
+} from './moments';
 
-const PETAL_PATH = 'M0 4 C 9 -8 9 -22 0 -28 C -9 -22 -9 -8 0 4 Z';
-
-function PetalSVG({className}: {className?: string}) {
-  return (
-    <svg viewBox="-12 -28 24 32" className={className} fill="currentColor" aria-hidden>
-      <path d={PETAL_PATH} />
-    </svg>
-  );
-}
-
-// ── Deterministic ambient decor (SSR-safe) ───────────────────
-const FLOATERS = Array.from({length: 18}, (_, i) => ({
+// ── Ambient decor — deliberately LIGHT (smoothness > density). ───────────────
+// Drifting peony petals + a few sparkles, plus rare full peonies. Keeping the
+// heavy multi-path Peony/Lily SVGs out of the infinite-animation pool is what
+// keeps the page buttery; the lush blooms live in the hero & the keepsakes.
+const FLOATERS = Array.from({length: 14}, (_, i) => ({
   id: i,
-  left: (i * 53 + 7) % 100,
-  size: 14 + ((i * 11) % 24),
-  duration: 13 + ((i * 7) % 12),
-  delay: (i * 0.9) % 12,
-  opacity: 0.26 + ((i * 17) % 40) / 100,
-  kind: i % 5 // 0 petal · 1 sparkle · 2 heart · 3 bloom · 4 butterfly
+  left: (i * 37 + 7) % 100,
+  size: 12 + ((i * 11) % 22),
+  duration: 18 + ((i * 7) % 12),
+  delay: (i * 1.3) % 16,
+  opacity: 0.18 + ((i * 17) % 30) / 100,
+  kind: i % 7 === 0 ? 2 : i % 2 === 0 ? 0 : 1 // 0 petal · 1 sparkle · 2 peony (rare)
 }));
 
-const STARS = Array.from({length: 26}, (_, i) => ({
-  left: (i * 37 + 5) % 100,
-  top: (i * 53 + 11) % 100,
+const STARS = Array.from({length: 16}, (_, i) => ({
+  left: (i * 53 + 5) % 100,
+  top: (i * 37 + 11) % 100,
   size: 1 + (i % 3),
   delay: ((i * 0.4) % 4).toFixed(2)
 }));
 
+// Only translate (cheap composite) — never scale a 64px blur each frame.
 const ORBS = [
-  {size: 360, color: 'rgba(255,184,213,0.42)', x: '8%', y: '12%', dur: 17, dx: 44, dy: 30},
-  {size: 320, color: 'rgba(205,180,255,0.42)', x: '74%', y: '20%', dur: 21, dx: -52, dy: 40},
-  {size: 400, color: 'rgba(201,24,74,0.34)', x: '46%', y: '78%', dur: 19, dx: 30, dy: -44},
-  {size: 260, color: 'rgba(255,243,234,0.28)', x: '86%', y: '66%', dur: 23, dx: -34, dy: -28}
-];
-
-const CLOUDS = [
-  {w: 300, h: 90, x: '-6%', y: '22%', dur: 42, dx: 60},
-  {w: 240, h: 70, x: '70%', y: '60%', dur: 54, dx: -50}
+  {size: 340, color: 'rgba(255,184,213,0.40)', x: '8%', y: '12%', dur: 22, dx: 40, dy: 28},
+  {size: 300, color: 'rgba(205,180,255,0.40)', x: '74%', y: '20%', dur: 26, dx: -46, dy: 36},
+  {size: 360, color: 'rgba(201,24,74,0.28)', x: '46%', y: '80%', dur: 24, dx: 28, dy: -38}
 ];
 
 function Floater({left, size, duration, delay, opacity, kind}: (typeof FLOATERS)[number]) {
   let node;
   if (kind === 1) node = <Sparkle weight="duotone" className="size-full text-magic-glow" />;
-  else if (kind === 2) node = <Heart weight="fill" className="size-full text-rose-300" />;
-  else if (kind === 3) node = <Bloom className="size-full" petals={6} />;
-  else if (kind === 4) node = <Butterfly weight="duotone" className="size-full text-fairy-purple" />;
-  else node = <PetalSVG className="size-full text-magic-glow" />;
+  else if (kind === 2) node = <Peony className="size-full" soft />;
+  else
+    node = (
+      <svg viewBox="-18 -50 36 56" className="size-full text-rose-300" fill="currentColor" aria-hidden>
+        <path d={PETAL_D} />
+      </svg>
+    );
   return (
     <motion.div
-      className="absolute top-0"
+      className="absolute top-0 will-change-transform"
       style={{left: `${left}%`, width: size, height: size, opacity}}
       initial={{y: '-15vh', rotate: 0}}
       animate={{y: '116vh', rotate: 360}}
@@ -71,39 +81,44 @@ function Floater({left, size, duration, delay, opacity, kind}: (typeof FLOATERS)
   );
 }
 
-function BloomCenter({reduce}: {reduce: boolean}) {
+// ── The hero peony — clickable, cycles a little secret each press (egg A) ─────
+function PeonyCenter({reduce, onPress, label}: {reduce: boolean; onPress: () => void; label: string}) {
   const burst = Array.from({length: 12}, (_, i) => {
     const a = (i / 12) * Math.PI * 2;
     return {x: Math.cos(a) * 130, y: Math.sin(a) * 130, r: (a * 180) / Math.PI};
   });
   return (
-    <div className="relative grid place-items-center">
-      {!reduce ? (
-        <motion.div
-          className="absolute size-60 rounded-full blur-3xl"
-          style={{background: 'radial-gradient(circle, rgba(205,180,255,0.55), transparent 70%)'}}
-          animate={{scale: [1, 1.18, 1], opacity: [0.45, 0.8, 0.45]}}
-          transition={{duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.6}}
-        />
-      ) : null}
+    <button type="button" onClick={onPress} aria-label={label} className="relative grid cursor-pointer place-items-center">
+      {/* one-time entrance halo */}
       <motion.div
         className="absolute size-64 rounded-full blur-3xl"
-        style={{background: 'radial-gradient(circle, rgba(255,184,213,0.75), transparent 70%)'}}
-        initial={{scale: 0, opacity: 0}}
-        animate={{scale: [0, 1.1, 1], opacity: [0, 0.9, 0.6]}}
+        style={{background: 'radial-gradient(circle, rgba(255,184,213,0.7), transparent 70%)'}}
+        initial={{opacity: 0}}
+        animate={{opacity: 0.6}}
         transition={{duration: 1.8, ease: 'easeOut'}}
       />
+      {/* gentle pulse — opacity only (no blur re-raster) */}
+      {!reduce ? (
+        <motion.div
+          className="absolute size-56 rounded-full blur-3xl"
+          style={{background: 'radial-gradient(circle, rgba(205,180,255,0.5), transparent 70%)'}}
+          animate={{opacity: [0.35, 0.7, 0.35]}}
+          transition={{duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1.4}}
+        />
+      ) : null}
       {!reduce
         ? burst.map((b, i) => (
-            <motion.div
+            <motion.svg
               key={i}
-              className="absolute"
+              viewBox="-18 -50 36 56"
+              className="absolute size-5 text-magic-glow"
+              fill="currentColor"
               initial={{x: 0, y: 0, scale: 0, opacity: 0}}
               animate={{x: b.x, y: b.y, scale: [0, 1, 0], opacity: [0, 1, 0], rotate: b.r}}
               transition={{duration: 1.4, delay: 0.55, ease: 'easeOut'}}
             >
-              <PetalSVG className="size-5 text-magic-glow" />
-            </motion.div>
+              <path d={PETAL_D} />
+            </motion.svg>
           ))
         : null}
       <motion.div
@@ -112,14 +127,9 @@ function BloomCenter({reduce}: {reduce: boolean}) {
         transition={{duration: 1.5, ease: [0.2, 0.8, 0.2, 1], delay: 0.2}}
         className={cn('relative', !reduce && 'float-slow')}
       >
-        <motion.div
-          animate={!reduce ? {rotate: 360} : undefined}
-          transition={{duration: 90, repeat: Infinity, ease: 'linear'}}
-        >
-          <Bloom className="size-40 drop-shadow-[0_0_34px_rgba(255,184,213,0.65)]" petals={7} />
-        </motion.div>
+        <Peony className="size-44 drop-shadow-[0_0_30px_rgba(255,184,213,0.6)]" />
       </motion.div>
-    </div>
+    </button>
   );
 }
 
@@ -128,12 +138,18 @@ function Particle({x, y, kind}: {x: number; y: number; kind: number}) {
     <motion.div
       className="pointer-events-none fixed z-40"
       style={{left: x, top: y}}
-      initial={{opacity: 0.9, scale: 0.5, y: 0}}
-      animate={{opacity: 0, scale: 1, y: -28}}
+      initial={{opacity: 0.85, scale: 0.5, y: 0}}
+      animate={{opacity: 0, scale: 1, y: -26}}
       exit={{opacity: 0}}
-      transition={{duration: 0.95, ease: 'easeOut'}}
+      transition={{duration: 0.85, ease: 'easeOut'}}
     >
-      {kind ? <Sparkle weight="fill" className="size-3 text-magic-glow" /> : <PetalSVG className="size-3 text-rose-300" />}
+      {kind ? (
+        <Sparkle weight="fill" className="size-3 text-magic-glow" />
+      ) : (
+        <svg viewBox="-18 -50 36 56" className="size-3 text-rose-300" fill="currentColor">
+          <path d={PETAL_D} />
+        </svg>
+      )}
     </motion.div>
   );
 }
@@ -147,8 +163,8 @@ function SparkleBurst({x, y}: {x: number; y: number}) {
           key={i}
           className="absolute"
           initial={{x: 0, y: 0, scale: 0, opacity: 1}}
-          animate={{x: Math.cos(a) * 46, y: Math.sin(a) * 46 - 18, scale: [0, 1, 0], opacity: [1, 1, 0]}}
-          transition={{duration: 1.2, ease: 'easeOut'}}
+          animate={{x: Math.cos(a) * 44, y: Math.sin(a) * 44 - 16, scale: [0, 1, 0], opacity: [1, 1, 0]}}
+          transition={{duration: 1.1, ease: 'easeOut'}}
         >
           <Sparkle weight="fill" className="size-4 text-magic-glow" />
         </motion.div>
@@ -157,11 +173,57 @@ function SparkleBurst({x, y}: {x: number; y: number}) {
   );
 }
 
+// ── Cursor sparkle — fully ISOLATED so pointer moves never re-render the page.
+// (Mouse only; touch devices skip it. This was the main source of jank.) ──────
+type Pt = {id: number; x: number; y: number; kind: number};
+function CursorFx({enabled}: {enabled: boolean}) {
+  const reduce = useReducedMotion() ?? false;
+  const [trail, setTrail] = useState<Pt[]>([]);
+  const [bursts, setBursts] = useState<Pt[]>([]);
+  const last = useRef(0);
+  const idRef = useRef(0);
+
+  useEffect(() => {
+    if (!enabled || reduce) return;
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType && e.pointerType !== 'mouse') return;
+      if (e.timeStamp - last.current < 110) return;
+      last.current = e.timeStamp;
+      const id = ++idRef.current;
+      setTrail((t) => [...t, {id, x: e.clientX, y: e.clientY, kind: id % 2}].slice(-8));
+      window.setTimeout(() => setTrail((t) => t.filter((p) => p.id !== id)), 800);
+    };
+    const onDown = (e: PointerEvent) => {
+      const id = ++idRef.current + 1_000_000;
+      setBursts((b) => [...b.slice(-3), {id, x: e.clientX, y: e.clientY, kind: 0}]);
+      window.setTimeout(() => setBursts((b) => b.filter((p) => p.id !== id)), 1200);
+    };
+    window.addEventListener('pointermove', onMove, {passive: true});
+    window.addEventListener('pointerdown', onDown, {passive: true});
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerdown', onDown);
+    };
+  }, [enabled, reduce]);
+
+  if (!enabled || reduce) return null;
+  return (
+    <>
+      <AnimatePresence>{trail.map((p) => <Particle key={p.id} x={p.x} y={p.y} kind={p.kind} />)}</AnimatePresence>
+      <AnimatePresence>{bursts.map((b) => <SparkleBurst key={b.id} x={b.x} y={b.y} />)}</AnimatePresence>
+    </>
+  );
+}
+
 const reveal = (delay: number) => ({
   initial: {opacity: 0, y: 22},
   animate: {opacity: 1, y: 0},
   transition: {duration: 0.9, ease: [0.2, 0.7, 0.2, 1] as const, delay}
 });
+
+function Section({children, className}: {children: React.ReactNode; className?: string}) {
+  return <section className={cn('relative mx-auto w-full container-px', className)}>{children}</section>;
+}
 
 export function ForRemasExperience({
   title,
@@ -174,211 +236,136 @@ export function ForRemasExperience({
   showSparkle: boolean;
   locale: Locale;
 }) {
-  const t = useTranslations('forRemas');
   const reduce = useReducedMotion() ?? false;
-  const content = getLetterContent(locale);
-  const [bursts, setBursts] = useState<{id: number; x: number; y: number}[]>([]);
-  const [trail, setTrail] = useState<{id: number; x: number; y: number; kind: number}[]>([]);
-  const [revealed, setRevealed] = useState(false);
-  const [flowerSecret, setFlowerSecret] = useState(false);
-  const lastTrail = useRef(0);
-
-  function spawnSparkle(e: MouseEvent) {
-    if (!showSparkle) return;
-    const id = Date.now() + Math.random();
-    setBursts((b) => [...b, {id, x: e.clientX, y: e.clientY}]);
-    window.setTimeout(() => setBursts((b) => b.filter((p) => p.id !== id)), 1300);
-  }
-  function onMove(e: MouseEvent) {
-    if (!showSparkle || reduce) return;
-    const now = Date.now();
-    if (now - lastTrail.current < 70) return;
-    lastTrail.current = now;
-    const id = now + Math.random();
-    setTrail((tr) => [...tr, {id, x: e.clientX, y: e.clientY, kind: Math.floor(id) % 2}]);
-    window.setTimeout(() => setTrail((tr) => tr.filter((p) => p.id !== id)), 950);
-  }
+  const c = getForRemasContent(locale);
+  const [flowerStep, setFlowerStep] = useState(-1);
 
   const words = title.split(' ');
+  const cycle = c.eggs.flowerCycle;
 
   return (
-    <div
-      className="relative min-h-dvh overflow-hidden text-pearl"
-      style={{background: 'linear-gradient(180deg, #5e1f3c 0%, #3b2230 45%, #4a1a30 100%)'}}
-    >
-      {/* fixed ambient — persists across the whole scroll */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(70% 50% at 28% 14%, rgba(205,180,255,0.40), transparent 60%),' +
-              'radial-gradient(60% 50% at 82% 22%, rgba(255,184,213,0.34), transparent 58%),' +
-              'radial-gradient(80% 55% at 50% 92%, rgba(201,24,74,0.34), transparent 62%)'
-          }}
-        />
-        {!reduce
-          ? ORBS.map((o, i) => (
-              <motion.div
-                key={`orb${i}`}
-                className="absolute rounded-full blur-3xl"
-                style={{width: o.size, height: o.size, left: o.x, top: o.y, background: `radial-gradient(circle, ${o.color}, transparent 70%)`}}
-                animate={{x: [0, o.dx, 0], y: [0, o.dy, 0], scale: [1, 1.15, 1]}}
-                transition={{duration: o.dur, repeat: Infinity, ease: 'easeInOut'}}
-              />
-            ))
-          : null}
-        {!reduce
-          ? CLOUDS.map((c, i) => (
-              <motion.div
-                key={`cloud${i}`}
-                className="absolute rounded-full bg-pearl/10 blur-2xl"
-                style={{width: c.w, height: c.h, left: c.x, top: c.y}}
-                animate={{x: [0, c.dx, 0]}}
-                transition={{duration: c.dur, repeat: Infinity, ease: 'easeInOut'}}
-              />
-            ))
-          : null}
-        {STARS.map((s, i) => (
-          <span
-            key={`star${i}`}
-            className={cn('absolute rounded-full bg-pearl', !reduce && 'twinkle')}
-            style={{left: `${s.left}%`, top: `${s.top}%`, width: s.size, height: s.size, animationDelay: `${s.delay}s`}}
+    <ToastProvider>
+      <div className="relative min-h-dvh overflow-hidden text-pearl" style={{background: 'linear-gradient(180deg, #5e1f3c 0%, #3b2230 45%, #4a1a30 100%)'}}>
+        {/* fixed ambient — persists across the whole scroll */}
+        <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(70% 50% at 28% 14%, rgba(205,180,255,0.40), transparent 60%),' +
+                'radial-gradient(60% 50% at 82% 22%, rgba(255,184,213,0.34), transparent 58%),' +
+                'radial-gradient(80% 55% at 50% 92%, rgba(201,24,74,0.34), transparent 62%)'
+            }}
           />
-        ))}
-        {!reduce ? FLOATERS.map((f) => <Floater key={f.id} {...f} />) : null}
-        <div
-          className="absolute inset-0"
-          style={{background: 'radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(59,34,48,0.6) 100%)'}}
-        />
-      </div>
-
-      {/* ── HERO (unchanged spirit; interactions scoped here) ── */}
-      <section
-        onClick={spawnSparkle}
-        onMouseMove={onMove}
-        className="relative z-10 mx-auto flex min-h-dvh max-w-2xl flex-col items-center justify-center container-px py-16 text-center"
-      >
-        <motion.span {...reveal(0.1)} className="mb-10 font-display text-2xl text-pearl/90">
-          Remasia
-        </motion.span>
-
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            setFlowerSecret(true);
-          }}
-          aria-label={content.secrets.flower}
-          className="cursor-pointer"
-        >
-          <BloomCenter reduce={reduce} />
-        </button>
-        <div className="mt-3 flex min-h-5 items-center justify-center">
-          <AnimatePresence>
-            {flowerSecret ? (
-              <motion.p
-                initial={{opacity: 0, y: 6}}
-                animate={{opacity: 1, y: 0}}
-                className="text-xs italic text-pearl/70"
-              >
-                {content.secrets.flower}
-              </motion.p>
-            ) : null}
-          </AnimatePresence>
+          {!reduce
+            ? ORBS.map((o, i) => (
+                <motion.div
+                  key={`orb${i}`}
+                  className="absolute rounded-full blur-3xl will-change-transform"
+                  style={{width: o.size, height: o.size, left: o.x, top: o.y, background: `radial-gradient(circle, ${o.color}, transparent 70%)`}}
+                  animate={{x: [0, o.dx, 0], y: [0, o.dy, 0]}}
+                  transition={{duration: o.dur, repeat: Infinity, ease: 'easeInOut'}}
+                />
+              ))
+            : null}
+          {STARS.map((s, i) => (
+            <span
+              key={`star${i}`}
+              className={cn('absolute rounded-full bg-pearl', !reduce && 'twinkle')}
+              style={{left: `${s.left}%`, top: `${s.top}%`, width: s.size, height: s.size, animationDelay: `${s.delay}s`}}
+            />
+          ))}
+          {!reduce ? FLOATERS.map((f) => <Floater key={f.id} {...f} />) : null}
+          <div className="absolute inset-0" style={{background: 'radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(59,34,48,0.6) 100%)'}} />
         </div>
 
-        <motion.p {...reveal(0.9)} className="mt-6 text-sm tracking-[0.15em] text-magic-glow">
-          {t('kicker')}
-        </motion.p>
+        {/* ── HERO ── */}
+        <section className="relative z-10 mx-auto flex min-h-dvh max-w-2xl flex-col items-center justify-center container-px py-16 text-center">
+          {showSparkle ? <DoNotClick egg={c.eggs.doNotClick} className="absolute end-4 top-6" /> : null}
 
-        {reduce ? (
-          <h1 className="mt-3 max-w-xl font-display text-4xl leading-tight text-pearl md:text-6xl">{title}</h1>
-        ) : (
-          <motion.h1
-            initial="hidden"
-            animate="show"
-            variants={{hidden: {}, show: {transition: {staggerChildren: 0.09, delayChildren: 1.1}}}}
-            className="glow-pulse mt-3 max-w-xl font-display text-4xl leading-tight text-pearl md:text-6xl"
-          >
-            {words.map((w, i) => (
-              <motion.span
-                key={i}
-                variants={{
-                  hidden: {opacity: 0, y: 20, filter: 'blur(10px)'},
-                  show: {opacity: 1, y: 0, filter: 'blur(0px)', transition: {duration: 0.7, ease: [0.2, 0.7, 0.2, 1]}}
-                }}
-                className="inline-block"
-              >
-                {w}&nbsp;
-              </motion.span>
-            ))}
-          </motion.h1>
-        )}
+          <motion.span {...reveal(0.1)} className="mb-9 font-script text-2xl text-pearl/90">Remasia</motion.span>
+          <motion.p {...reveal(0.3)} className="mb-6 text-sm tracking-[0.18em] text-magic-glow">{c.hero.label}</motion.p>
 
-        {message ? (
-          <motion.p {...reveal(1.7)} className="mt-7 max-w-xl text-lg leading-relaxed text-pearl/85">
-            {message}
-          </motion.p>
-        ) : null}
-
-        <motion.div {...reveal(2.0)} className="mt-11 flex flex-wrap items-center justify-center gap-4">
-          <Link href="/" className="btn-magic px-8 py-3.5 font-display text-lg">
-            {t('openBoutique')}
-          </Link>
-          <Link
-            href="/studio/login"
-            className="rounded-pill border border-white/40 bg-white/10 px-8 py-3.5 font-display text-lg text-pearl backdrop-blur transition-colors hover:bg-white/20"
-          >
-            {t('enterStudio')}
-          </Link>
-        </motion.div>
-
-        {showSparkle ? (
-          <motion.div {...reveal(2.3)} className="mt-12 flex flex-col items-center gap-2">
-            <button
-              type="button"
-              aria-label={t('secretHint')}
-              onClick={(e) => {
-                e.stopPropagation();
-                setRevealed(true);
-              }}
-              className="grid size-12 place-items-center rounded-full transition-transform hover:scale-110"
-            >
-              <Heart weight="fill" className={cn('size-7 text-romantic-red', !reduce && 'twinkle')} />
-            </button>
-            <AnimatePresence mode="wait" initial={false}>
-              {revealed ? (
-                <motion.p
-                  key="secret"
-                  initial={{opacity: 0, y: 8, scale: 0.96}}
-                  animate={{opacity: 1, y: 0, scale: 1}}
-                  exit={{opacity: 0}}
-                  transition={{duration: 0.7, ease: 'easeOut'}}
-                  className="max-w-md text-pearl/90 italic"
-                >
-                  {t('secret')}
+          <PeonyCenter reduce={reduce} label={cycle[0]} onPress={() => setFlowerStep((s) => (s + 1) % cycle.length)} />
+          <div className="mt-4 flex min-h-6 items-center justify-center">
+            <AnimatePresence mode="wait">
+              {flowerStep >= 0 ? (
+                <motion.p key={flowerStep} initial={{opacity: 0, y: 6}} animate={{opacity: 1, y: 0}} exit={{opacity: 0, y: -6}} className="text-sm italic text-pearl/75">
+                  {cycle[flowerStep]}
                 </motion.p>
-              ) : (
-                <motion.span key="hint" initial={{opacity: 0}} animate={{opacity: 0.7}} exit={{opacity: 0}} className="text-xs text-pearl/60">
-                  {t('secretHint')}
-                </motion.span>
-              )}
+              ) : null}
             </AnimatePresence>
+          </div>
+
+          {reduce ? (
+            <h1 className="mt-6 max-w-xl font-script text-4xl leading-tight text-pearl md:text-6xl">{title}</h1>
+          ) : (
+            <motion.h1
+              initial="hidden"
+              animate="show"
+              variants={{hidden: {}, show: {transition: {staggerChildren: 0.09, delayChildren: 0.6}}}}
+              className="glow-pulse mt-6 max-w-xl font-script text-4xl leading-tight text-pearl md:text-6xl"
+            >
+              {words.map((w, i) => (
+                <motion.span
+                  key={i}
+                  variants={{
+                    hidden: {opacity: 0, y: 20, filter: 'blur(10px)'},
+                    show: {opacity: 1, y: 0, filter: 'blur(0px)', transition: {duration: 0.7, ease: [0.2, 0.7, 0.2, 1]}}
+                  }}
+                  className="inline-block"
+                >
+                  {w}&nbsp;
+                </motion.span>
+              ))}
+            </motion.h1>
+          )}
+
+          {message ? (
+            <motion.p {...reveal(1.2)} className="mt-7 max-w-xl text-lg leading-relaxed text-pearl/85">{message}</motion.p>
+          ) : null}
+
+          <motion.div {...reveal(1.5)} className="mt-11 flex flex-wrap items-center justify-center gap-4">
+            <Link href="/" className="btn-magic px-8 py-3.5 font-script text-lg">{c.hero.primary}</Link>
+            <Link href="/studio/login" className="rounded-pill border border-white/40 bg-white/10 px-8 py-3.5 font-script text-lg text-pearl backdrop-blur transition-colors hover:bg-white/20">
+              {c.hero.secondary}
+            </Link>
           </motion.div>
-        ) : null}
 
-        <motion.span {...reveal(2.7)} className="mt-12 text-xs text-pearl/45">
-          ↓
-        </motion.span>
-      </section>
+          <motion.p {...reveal(1.8)} className="mt-9 text-sm text-pearl/65">{c.hero.note}</motion.p>
+          <motion.span {...reveal(2.1)} className="mt-10 text-xs text-pearl/45">↓</motion.span>
+        </section>
 
-      {/* ── The love letter ── */}
-      <LetterSections content={content} />
+        {/* ── The keepsake sequence ── */}
+        <div className="relative z-10 pb-24">
+          {showSparkle ? <FloatingHearts messages={c.eggs.heartToasts} /> : null}
 
-      {/* interaction layers */}
-      <AnimatePresence>{trail.map((p) => <Particle key={p.id} x={p.x} y={p.y} kind={p.kind} />)}</AnimatePresence>
-      <AnimatePresence>{bursts.map((b) => <SparkleBurst key={b.id} x={b.x} y={b.y} />)}</AnimatePresence>
-    </div>
+          <Section className="max-w-lg py-20 md:py-24"><FoldedLetter c={c.letter} /></Section>
+          <Section className="max-w-3xl py-16 md:py-20"><KeepsakeNotes c={c.keepsakes} /></Section>
+          <Section className="max-w-md py-10 text-center"><ComplimentFlower egg={c.eggs.compliment} /></Section>
+          <Section className="max-w-3xl py-16 md:py-20"><PressedFlowers c={c.pressed} /></Section>
+          <Section className="max-w-2xl py-16 md:py-20"><WrappedGift c={c.gift} /></Section>
+          <Section className="max-w-md py-16 md:py-20"><Passcode egg={c.eggs.passcode} /></Section>
+          <Section className="max-w-sm py-16 md:py-20"><OrderReceipt c={c.order} /></Section>
+          <Section className="max-w-3xl py-16 md:py-20"><TwentyWishes c={c.wishes} locale={locale} /></Section>
+          <Section className="max-w-md py-24 md:py-32"><Overwhelm c={c.overwhelm} /></Section>
+          <Section className="max-w-2xl py-16 md:py-20"><MoodLetters c={c.moods} /></Section>
+          <Section className="max-w-md py-10 text-center"><HiddenTimestamp egg={c.eggs.timestamp} /></Section>
+          <Section className="max-w-xl py-24 md:py-32"><FinalDoor c={c.ending} /></Section>
+
+          <footer className="relative z-10 flex flex-col items-center gap-5 px-5 pb-16 text-center">
+            <p className="font-script text-2xl text-pearl">{c.signature}</p>
+            <p className="text-xs text-pearl/40">{c.eggs.typedName.hint}</p>
+            <FooterSecret egg={c.eggs.footerSecret} />
+          </footer>
+        </div>
+
+        {/* G · typed-name reveal (global listener + overlay) */}
+        <TypedNameReveal egg={c.eggs.typedName} />
+
+        {/* isolated cursor sparkle */}
+        <CursorFx enabled={showSparkle} />
+      </div>
+    </ToastProvider>
   );
 }
